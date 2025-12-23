@@ -1,4 +1,4 @@
-# OutLast
+# Outlast AI
 
 Logistics follow-up automation system that manages multi-channel communication for order tracking and provider outreach.
 
