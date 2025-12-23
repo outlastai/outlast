@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Provider {
+  id              String   @id @default(uuid())
+  name            String
+  country         String?  // Supplier Country
+  preferredChannel String  @default("EMAIL") // CommunicationChannel: SMS, EMAIL, VOICE
+  contactInfo     String   // JSON string: { SMS: "+1234567890", EMAIL: "provider@example.com", VOICE: "+1234567890" }
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  
+  orders          Order[]
+  
+  @@map("providers")
+}
+
+model Order {
+  id                  String   @id @default(uuid())
+  orderId             String   @unique
+  partName            String   @map("part_name")
+  componentDescription String? @map("component_description") // Component Description
+  subSystem           String?  @map("sub_system") // Sub-System
+  providerId          String   @map("provider_id")
+  status              String   @default("PENDING") // OrderStatus: PENDING, IN_TRANSIT, DELIVERED, DELAYED, CANCELLED
+  orderedDate         DateTime? @map("ordered_date") // Ordered Date
+  expectedDeliveryDate DateTime? @map("expected_delivery_date") // Confirmed Delivery Date
+  leadTimeWeeks       Int?     @map("lead_time_weeks") // Lead Time (Wks)
+  priority            String?  @default("NORMAL") // OrderPriority: LOW, NORMAL, HIGH, URGENT
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+  
+  provider            Provider @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  history             OrderHistory[]
+  followUps           FollowUp[]
+  escalations         Escalation[]
+  
+  @@map("orders")
+}
+
+model OrderHistory {
+  id              String   @id @default(uuid())
+  orderId         String   @map("order_id")
+  type            String   // OrderHistoryType: AI_ANALYSIS, FOLLOW_UP_SENT, RESPONSE_RECEIVED, STATUS_UPDATE, MANUAL_ENTRY, SYSTEM_EVENT
+  timestamp       DateTime @default(now())
+  aiSummary       String?  @map("ai_summary") // AI-generated summary with context
+  context         String?  // JSON string: structured context for AI
+  metadata        String?  // JSON string: tools called, actions taken, decisions made
+  rawData         String?  @map("raw_data") // JSON string: original data before AI processing
+  conversationTurn Int?    @map("conversation_turn") // Sequence in conversation
+  
+  order           Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@index([orderId, timestamp])
+  @@index([orderId, conversationTurn])
+  @@map("order_history")
+}
+
+model FollowUp {
+  id            String   @id @default(uuid())
+  orderId       String   @map("order_id")
+  channel       String   // CommunicationChannel: SMS, EMAIL, VOICE
+  message       String
+  response      String?  // Response received, if any
+  success       Boolean  @default(false)
+  attemptNumber Int      @map("attempt_number")
+  timestamp     DateTime @default(now())
+  
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@index([orderId, timestamp])
+  @@map("follow_ups")
+}
+
+model Escalation {
+  id          String   @id @default(uuid())
+  orderId     String   @map("order_id")
+  reason      String   // EscalationReason: MAX_ATTEMPTS, MANUAL, URGENT, NO_RESPONSE, SYSTEM_ERROR
+  status      String   @default("PENDING") // EscalationStatus: PENDING, IN_PROGRESS, RESOLVED
+  assignedTo String?  @map("assigned_to") // User/agent identifier
+  notes       String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  resolvedAt  DateTime? @map("resolved_at")
+  
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  @@index([orderId, status])
+  @@map("escalations")
+}
+

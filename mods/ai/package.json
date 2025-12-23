@@ -1,0 +1,24 @@
+{
+  "name": "@outlast/ai",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.1.0",
+    "@langchain/openai": "^0.0.14",
+    "@langchain/community": "^0.0.20",
+    "langchain": "^0.1.0",
+    "zod": "^3.22.4",
+    "@outlast/logger": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  }
+}
+
