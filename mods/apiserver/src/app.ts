@@ -10,6 +10,7 @@ import { createWebhookHandler } from './channels/webhook-handler';
 import { createChannelWebhookHandler } from './channels/channel-webhook-handler';
 import { createFollowUpService, createFollowUpHandlers, createFollowUpRoutes } from './follow-ups';
 import { createSchedulerRunner, createSchedulerHandlers, createSchedulerRoutes, createCronScheduler } from './scheduler';
+import { createVoiceService, createVoiceHandlers, createVoiceRoutes } from './voice';
 import { createErrorHandler } from './middleware';
 
 interface AppDependencies {
@@ -124,6 +125,50 @@ export function createApp(dependencies: AppDependencies): Express {
   app.post('/api/webhooks/email', webhookHandler.handleEmailWebhook);
   
   logger.info('Channel webhook handlers initialized');
+
+  // Voice routes (Fonoster integration)
+  let voiceService: ReturnType<typeof createVoiceService> | null = null;
+  if (process.env.FONOSTER_WORKSPACE_ACCESS_KEY_ID && 
+      process.env.FONOSTER_ACCESS_KEY_ID && 
+      process.env.FONOSTER_ACCESS_KEY_SECRET) {
+    try {
+      voiceService = createVoiceService({
+        config: {
+          workspaceAccessKeyId: process.env.FONOSTER_WORKSPACE_ACCESS_KEY_ID,
+          accessKeyId: process.env.FONOSTER_ACCESS_KEY_ID,
+          accessKeySecret: process.env.FONOSTER_ACCESS_KEY_SECRET,
+          fromNumber: process.env.FONOSTER_FROM_NUMBER
+        },
+        logger
+      });
+      logger.info('Voice service initialized with Fonoster credentials');
+    } catch (error) {
+      logger.warn('Voice service not available', { error });
+    }
+  } else {
+    logger.warn('Fonoster credentials not set, voice service will return errors on call');
+  }
+  
+  // Always register voice routes (service will handle missing credentials gracefully)
+  if (voiceService) {
+    const voiceHandlers = createVoiceHandlers({ voiceService });
+    const voiceRoutes = createVoiceRoutes(voiceHandlers);
+    app.use('/api/voice', voiceRoutes);
+    logger.info('Voice routes initialized');
+  } else {
+    // Register routes with a stub service that returns an error
+    const stubVoiceService = {
+      createCall: async (_request: unknown) => ({
+        callRef: '',
+        status: 'FAILED' as const,
+        error: 'Fonoster credentials not configured. Please set FONOSTER_WORKSPACE_ACCESS_KEY_ID, FONOSTER_ACCESS_KEY_ID, and FONOSTER_ACCESS_KEY_SECRET environment variables.'
+      })
+    };
+    const voiceHandlers = createVoiceHandlers({ voiceService: stubVoiceService as ReturnType<typeof createVoiceService> });
+    const voiceRoutes = createVoiceRoutes(voiceHandlers);
+    app.use('/api/voice', voiceRoutes);
+    logger.info('Voice routes initialized (stub mode - credentials required)');
+  }
 
   // Scheduler routes (requires channel service)
   let cronScheduler: ReturnType<typeof createCronScheduler> | null = null;

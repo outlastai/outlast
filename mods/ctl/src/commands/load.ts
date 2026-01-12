@@ -9,8 +9,8 @@ import { getLogger } from '@outlast/logger';
 // Try multiple possible locations
 const possibleEnvPaths = [
   resolve(process.cwd(), '.env'),
-  resolve(__dirname, '../../../.env'),
   resolve(__dirname, '../../../../.env'),
+  resolve(__dirname, '../../../../../.env'),
 ];
 
 let envLoaded = false;
@@ -285,4 +285,3 @@ export default class Load extends Command {
     }
   }
 }
-

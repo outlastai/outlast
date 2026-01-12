@@ -4,22 +4,14 @@
   "private": true,
   "description": "Logistics follow-up automation system",
   "workspaces": [
-    "mods/*",
-    "mods/mcp-server"
+    "mods/*"
   ],
   "bin": {
     "outlast": "./bin/run"
   },
-  "oclif": {
-    "bin": "outlast",
-    "dirname": "outlast",
-    "commands": "./dist/commands",
-    "topics": {},
-    "plugins": []
-  },
   "scripts": {
-    "build": "npm run build --workspaces && npm run build:cli",
-    "build:cli": "tsc -p tsconfig.cli.json",
+    "build": "npm run build --workspaces",
+    "build:ctl": "npm run build --workspace=@outlast/ctl",
     "test": "npm run test --workspaces",
     "test:integration": "npm run test:integration --workspace=@outlast/apiserver",
     "test:all": "npm run test:all --workspace=@outlast/apiserver",
@@ -32,7 +24,7 @@
     "prisma:studio": "npm run prisma:studio --workspace=@outlast/apiserver",
     "db:reset": "npm run db:reset --workspace=@outlast/apiserver",
     "db:seed": "npm run db:seed --workspace=@outlast/apiserver",
-    "load": "ts-node -r dotenv/config src/commands/load.ts",
+    "load": "ts-node -r dotenv/config mods/ctl/src/commands/load.ts",
     "ai:build": "npm run build --workspace=@outlast/ai",
     "ai:example": "ts-node -r dotenv/config mods/ai/src/example.ts",
     "test:agent": "./QUICK_TEST.sh",
@@ -42,10 +34,7 @@
     "mcp:configure:claude": "ts-node -r dotenv/config .scripts/mcp-configure.ts"
   },
   "dependencies": {
-    "@oclif/core": "^2.10.0",
-    "@outlast/logger": "workspace:*",
-    "@prisma/client": "^5.7.1",
-    "dotenv": "^16.3.1"
+    "@outlast/logger": "*"
   },
   "devDependencies": {
     "@types/node": "^20.10.0",

@@ -20,6 +20,7 @@
     "dev": "ts-node -r dotenv/config src/index.ts DOTENV_CONFIG_PATH=../../.env"
   },
   "dependencies": {
+    "@fonoster/sdk": "^0.16.8",
     "@prisma/client": "^5.7.1",
     "prisma": "^5.7.1",
     "express": "^4.18.2",

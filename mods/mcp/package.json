@@ -1,5 +1,5 @@
 {
-  "name": "@outlast/mcp-server",
+  "name": "@outlast/mcp",
   "version": "0.1.0",
   "private": true,
   "description": "MCP server for OutLast API",
