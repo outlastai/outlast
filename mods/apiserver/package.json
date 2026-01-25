@@ -22,6 +22,7 @@
   "dependencies": {
     "@fonoster/logger": "^0.9.23",
     "@outlast/common": "^1.0.0",
+    "@outlast/identity": "^1.0.0",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@trpc/server": "^11.8.1",
@@ -35,6 +36,7 @@
     "@types/express": "^5.0.6",
     "@types/mocha": "^10.0.10",
     "@types/node": "^25.0.10",
+    "@types/pg": "^8.15.4",
     "@types/sinon": "^21.0.0",
     "@types/sinon-chai": "^4.0.0",
     "chai": "^6.2.2",
@@ -42,7 +44,6 @@
     "nodemon": "^3.1.10",
     "prisma": "^7.3.0",
     "sinon": "^21.0.1",
-    "@types/pg": "^8.15.4",
     "sinon-chai": "^4.0.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

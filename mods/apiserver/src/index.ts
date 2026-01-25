@@ -9,10 +9,12 @@ import { dirname, resolve } from "path";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 config({ path: resolve(__dirname, "../../../.env") });
 
+assertEnvsAreSet(["OUTLAST_DATABASE_URL", "OUTLAST_IDENTITY_PUBLIC_KEY"]);
+
 import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter, createContext } from "./trpc/index.js";
-import { ValidationError } from "@outlast/common";
+import { assertEnvsAreSet, ValidationError } from "@outlast/common";
 import { logger } from "./logger.js";
 
 // Re-export AppRouter type for clients

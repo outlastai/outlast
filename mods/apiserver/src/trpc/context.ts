@@ -2,32 +2,22 @@
  * Copyright (C) 2026 by Outlast. MIT License.
  */
 import type { Request } from "express";
-import type { DbClient } from "@outlast/common";
+import { toPem, verifyToken, type DbClient, type TokenPayload } from "@outlast/common";
 import { prisma } from "../db.js";
 
 /**
- * Validates Basic Auth header against OUTLAST_CREDENTIALS env var.
+ * Extracts bearer token from Authorization header.
  * @param authHeader - The Authorization header value
- * @returns true if credentials match, false otherwise
+ * @returns token if present, otherwise undefined
  */
-function validateBasicAuth(authHeader: string | undefined): boolean {
-  if (!authHeader || !authHeader.startsWith("Basic ")) {
-    return false;
+function getBearerToken(authHeader: string | undefined): string | undefined {
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return undefined;
   }
-
-  const expectedCredentials = process.env.OUTLAST_CREDENTIALS;
-  if (!expectedCredentials) {
-    return false;
-  }
-
-  try {
-    const base64Credentials = authHeader.slice(6); // Remove "Basic " prefix
-    const credentials = Buffer.from(base64Credentials, "base64").toString("utf-8");
-    return credentials === expectedCredentials;
-  } catch {
-    return false;
-  }
+  return authHeader.slice("Bearer ".length);
 }
+
+const publicKey = toPem(process.env.OUTLAST_IDENTITY_PUBLIC_KEY);
 
 /**
  * Context available to all tRPC procedures.
@@ -35,6 +25,10 @@ function validateBasicAuth(authHeader: string | undefined): boolean {
 export interface Context {
   db: DbClient;
   isAuthenticated: boolean;
+  user?: TokenPayload;
+  accessKeyId?: string;
+  accessToken?: string;
+  ip?: string;
 }
 
 /**
@@ -42,10 +36,37 @@ export interface Context {
  * @param opts - Request options containing the Express request
  * @returns Context with db client and authentication status
  */
-export function createContext({ req }: { req: Request }): Context {
+export async function createContext({ req }: { req: Request }): Promise<Context> {
   const authHeader = req.headers.authorization;
-  const isAuthenticated = validateBasicAuth(authHeader);
+  const accessKeyIdHeader = req.headers["x-access-key-id"];
+  const accessKeyIdFromHeader = Array.isArray(accessKeyIdHeader)
+    ? accessKeyIdHeader[0]
+    : accessKeyIdHeader;
+  const token = getBearerToken(authHeader);
+  let user: TokenPayload | undefined;
+
+  if (token && publicKey) {
+    try {
+      user = verifyToken(token, publicKey);
+    } catch {
+      user = undefined;
+    }
+  }
+  // Get client IP from x-forwarded-for header or socket
+  const forwardedFor = req.headers["x-forwarded-for"];
+  const forwardedIp = Array.isArray(forwardedFor)
+    ? forwardedFor[0]
+    : forwardedFor?.split(",")[0]?.trim();
+  const ip = forwardedIp || req.socket?.remoteAddress;
+
   // Cast prisma to DbClient - the interfaces are compatible at runtime
   // but have minor type differences
-  return { db: prisma as unknown as DbClient, isAuthenticated };
+  return {
+    db: prisma as unknown as DbClient,
+    isAuthenticated: Boolean(user),
+    user,
+    accessKeyId: accessKeyIdFromHeader,
+    accessToken: token,
+    ip
+  };
 }

@@ -20,7 +20,7 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 
 /**
- * Protected procedure - requires Basic Auth.
+ * Protected procedure - requires a verified JWT.
  * Throws UNAUTHORIZED error if not authenticated.
  */
 export const protectedProcedure = t.procedure.use(({ ctx, next }) => {

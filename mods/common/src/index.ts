@@ -8,7 +8,17 @@
 export { ValidationError, type FieldError } from "./errors/index.js";
 
 // Utilities
-export { withErrorHandlingAndValidation } from "./utils/index.js";
+export { assertEnvsAreSet, withErrorHandlingAndValidation } from "./utils/index.js";
+
+// Auth
+export {
+  toPem,
+  verifyToken,
+  createAuthMiddleware,
+  type TokenPayload,
+  type WorkspaceAccess,
+  type VerifyTokenOptions
+} from "./auth/index.js";
 
 // Schemas
 export {

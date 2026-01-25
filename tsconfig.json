@@ -21,7 +21,8 @@
   "references": [
     { "path": "./mods/common" },
     { "path": "./mods/agents" },
-    { "path": "./mods/ctl" }
+    { "path": "./mods/ctl" },
+    { "path": "./mods/identity" }
   ],
   "files": [],
   "exclude": ["node_modules", "dist", "**/*.js"]
