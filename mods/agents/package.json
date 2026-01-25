@@ -1,0 +1,23 @@
+{
+  "name": "@outlast/agents",
+  "version": "1.0.0",
+  "description": "Outlast AI Agents",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"No tests yet\"",
+    "start": "node dist/index.js",
+    "dev": "tsc --watch & node --watch dist/index.js",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@outlast/common": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "typescript": "^5.9.3"
+  }
+}

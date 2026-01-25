@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: outlast-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-outlast}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - outlast-network
+
+  apiserver:
+    build:
+      context: .
+      dockerfile: mods/apiserver/Dockerfile
+    container_name: outlast-apiserver
+    restart: unless-stopped
+    ports:
+      - "${OUTLAST_PORT:-3000}:3000"
+    environment:
+      # Database (Postgres connection)
+      - OUTLAST_DATABASE_URL=${OUTLAST_DATABASE_URL:-postgresql://postgres:postgres@postgres:5432/outlast}
+      # API Server
+      - OUTLAST_PORT=${OUTLAST_PORT:-3000}
+      # Basic auth credentials for system API access (format: username:password)
+      - OUTLAST_CREDENTIALS=${OUTLAST_CREDENTIALS:-admin:secret}
+      # API URL for CLI and other clients
+      - OUTLAST_API_URL=${OUTLAST_API_URL:-http://localhost:3000}
+      # Public URL for serving images
+      - OUTLAST_PUBLIC_URL=${OUTLAST_PUBLIC_URL:-http://localhost:3000}
+      # Public path for static files (use absolute path in container)
+      - OUTLAST_PUBLIC_PATH=${OUTLAST_PUBLIC_PATH:-/app/public}
+    volumes:
+      # Public directory for serving static files
+      - ./public:/app/public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+        ]
+      interval: 30s
+      timeout: 3s
+      start_period: 40s
+      retries: 3
+    networks:
+      - outlast-network
+
+volumes:
+  postgres_data:
+
+networks:
+  outlast-network:
+    driver: bridge

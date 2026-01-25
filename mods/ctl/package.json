@@ -1,0 +1,38 @@
+{
+  "name": "@outlast/ctl",
+  "version": "1.0.0",
+  "description": "Outlast CLI tool",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "ol": "./bin/run.js"
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "oclif": {
+    "commands": "./dist/commands",
+    "bin": "ol",
+    "topicSeparator": ":"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"No tests yet\"",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@outlast/common": "^1.0.0",
+    "@oclif/core": "^4.8.0",
+    "@trpc/client": "^11.8.1",
+    "@inquirer/prompts": "^7.1.0",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@outlast/apiserver": "^1.0.0",
+    "@types/node": "^25.0.10",
+    "typescript": "^5.9.3"
+  }
+}
