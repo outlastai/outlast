@@ -13,6 +13,7 @@
     "test": "lerna run test",
     "typecheck": "lerna run typecheck",
     "start:apiserver": "LOGS_LEVEL=verbose npm start -w @outlast/apiserver",
+    "start:dashboard": "npm run dev -w @outlast/dashboard",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

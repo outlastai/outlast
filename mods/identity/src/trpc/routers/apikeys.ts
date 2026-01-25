@@ -17,6 +17,7 @@ const refInput = z.object({
 });
 
 const createApiKeyInput = z.object({
+  workspaceRef: z.string().uuid().optional(),
   role: z.enum(["WORKSPACE_OWNER", "WORKSPACE_ADMIN", "WORKSPACE_MEMBER"]),
   expiresAt: z.number().int().positive().optional()
 });
@@ -36,7 +37,12 @@ const deleteApiKey = promisifyHandler(createDeleteApiKey(prisma));
 
 export const apiKeysRouter = router({
   create: protectedProcedure.input(createApiKeyInput).mutation(async ({ ctx, input }) => {
-    return createApiKey(input, { accessKeyId: ctx.accessKeyId });
+    const request = {
+      role: input.role,
+      expiresAt: input.expiresAt,
+      ...(input.workspaceRef && { workspaceRef: input.workspaceRef })
+    };
+    return createApiKey(request, { accessKeyId: ctx.accessKeyId });
   }),
   list: protectedProcedure.input(listApiKeysInput).query(async ({ ctx, input }) => {
     const request = {

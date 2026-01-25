@@ -2,7 +2,9 @@
  * Copyright (C) 2026 by Outlast. MIT License.
  */
 import { Command, Interfaces } from "@oclif/core";
-import { createClient } from "./lib/trpc.js";
+import { Client } from "@outlast/sdk";
+import { getActiveWorkspace, getConfig } from "./config/index.js";
+import { CONFIG_FILE } from "./constants.js";
 
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T["args"]>;
 
@@ -23,15 +25,17 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     this.args = args as Args<T>;
   }
 
-  protected createClient() {
-    const apiUrl = process.env.OUTLAST_API_URL || "http://localhost:3000";
-    const credentials = process.env.OUTLAST_CREDENTIALS;
+  protected async createClient() {
+    const workspaces = getConfig(CONFIG_FILE);
+    const activeWorkspace = getActiveWorkspace(workspaces);
 
-    if (!credentials) {
-      this.error("OUTLAST_CREDENTIALS environment variable is required");
+    if (!activeWorkspace) {
+      this.error("No active workspace. Run 'ol workspaces:login' first.");
     }
 
-    return createClient(apiUrl, credentials);
+    const client = new Client({ endpoint: activeWorkspace.endpoint });
+    await client.loginWithApiKey(activeWorkspace.accessKeyId, activeWorkspace.accessKeySecret);
+    return client;
   }
 
   protected async catch(err: Error & { exitCode?: number }) {

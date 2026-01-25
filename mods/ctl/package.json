@@ -15,7 +15,8 @@
   "oclif": {
     "commands": "./dist/commands",
     "bin": "ol",
-    "topicSeparator": ":"
+    "topicSeparator": ":",
+    "helpClass": "./dist/Help"
   },
   "scripts": {
     "build": "tsc",
@@ -26,12 +27,15 @@
   "dependencies": {
     "@outlast/common": "^1.0.0",
     "@oclif/core": "^4.8.0",
-    "@trpc/client": "^11.8.1",
+    "@outlast/sdk": "^1.0.0",
     "@inquirer/prompts": "^7.1.0",
-    "dotenv": "^16.4.7"
+    "cliui": "^8.0.1",
+    "dotenv": "^16.4.7",
+    "figlet": "^1.8.0"
   },
   "devDependencies": {
     "@outlast/apiserver": "^1.0.0",
+    "@types/figlet": "^1.5.8",
     "@types/node": "^25.0.10",
     "typescript": "^5.9.3"
   }

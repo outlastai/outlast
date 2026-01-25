@@ -12,6 +12,7 @@ config({ path: resolve(__dirname, "../../../.env") });
 assertEnvsAreSet(["OUTLAST_DATABASE_URL", "OUTLAST_IDENTITY_PUBLIC_KEY"]);
 
 import express from "express";
+import cors from "cors";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter, createContext } from "./trpc/index.js";
 import { assertEnvsAreSet, ValidationError } from "@outlast/common";
@@ -23,6 +24,14 @@ export type { AppRouter } from "./trpc/index.js";
 
 const app = express();
 const PORT = process.env.OUTLAST_PORT || 3000;
+
+// Enable CORS for dashboard and other clients
+app.use(
+  cors({
+    origin: process.env.OUTLAST_CORS_ORIGIN || ["http://localhost:5173", "http://localhost:3001"],
+    credentials: true
+  })
+);
 
 app.use(express.json());
 
