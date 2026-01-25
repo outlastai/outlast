@@ -8,14 +8,184 @@ datasource db {
 }
 
 // =============================================================================
+// Enums
+// =============================================================================
+
+enum RecordType {
+  GENERIC
+  PURCHASE_ORDER
+  INVENTORY_ITEM
+  INVOICE
+  SHIPMENT
+  TICKET
+  RETURN
+}
+
+enum RecordStatus {
+  OPEN
+  DONE
+  BLOCKED
+  ARCHIVED
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum PriorityLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum SourceSystem {
+  CSV
+  ODOO
+  SALESFORCE
+  SAP
+  EMAIL
+  MANUAL
+}
+
+enum Channel {
+  EMAIL
+  PHONE
+  SMS
+  WHATSAPP
+}
+
+enum ItemStatus {
+  PENDING
+  RECEIVED
+  BACKORDERED
+  CANCELLED
+}
+
+// =============================================================================
 // Models
 // =============================================================================
 
 model Record {
-  id        String   @id @default(uuid())
-  title     String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            String      @id @default(uuid())
+  workspaceId   String      @map("workspace_id")
+  type          RecordType  @default(GENERIC) @map("type")
+  title         String      @map("title")
+  status        RecordStatus @default(OPEN) @map("status")
+  risk          RiskLevel?  @map("risk")
+  priority      PriorityLevel? @map("priority")
+  contactId     String?    @map("contact_id")
+  dueAt         DateTime?  @map("due_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  sourceSystem  SourceSystem @map("source_system")
+  sourceRecordId String?    @map("source_record_id")
+  metadata      Json?       @map("metadata")
+  rawData       Json?       @map("raw_data")
 
+  // Relations
+  contact       Contact?    @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  history       RecordHistory[]
+  recordWorkflows RecordWorkflow[]
+  items         Item[]
+
+  @@index([workspaceId])
+  @@index([type])
+  @@index([status])
+  @@index([contactId])
+  @@index([sourceSystem, sourceRecordId])
   @@map("records")
+}
+
+model RecordHistory {
+  id              String      @id @default(uuid())
+  recordId        String      @map("record_id")
+  status          RecordStatus @map("status")
+  aiNote          String?     @map("ai_note") @db.Text
+  humanNote       String?     @map("human_note") @db.Text
+  agent           String      @map("agent")
+  channel         Channel     @map("channel")
+  channelMetadata Json?       @map("channel_metadata")
+  createdAt       DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  record          Record      @relation(fields: [recordId], references: [id], onDelete: Cascade)
+
+  @@index([recordId])
+  @@index([createdAt])
+  @@map("record_history")
+}
+
+model Contact {
+  id                    String                @id @default(uuid())
+  workspaceId            String               @map("workspace_id")
+  name                  String                @map("name")
+  email                 String?               @map("email")
+  phone                 String?               @map("phone")
+  preferredChannel      Channel               @map("preferred_contact_method")
+  createdAt             DateTime              @default(now()) @map("created_at")
+  updatedAt             DateTime              @updatedAt @map("updated_at")
+
+  // Relations
+  records               Record[]
+
+  @@index([workspaceId])
+  @@index([email])
+  @@index([phone])
+  @@map("contacts")
+}
+
+model Workflow {
+  id            String   @id @default(uuid())
+  workspaceId   String   @map("workspace_id")
+  name          String   @map("name")
+  description   String?  @map("description") @db.Text
+  model         String?  @map("model")
+  systemPrompt  String?  @map("system_prompt") @db.Text
+  temperature   Float?   @map("temperature")
+  tools         Json?    @map("tools")
+  staticRules   Json?    @map("static_rules")
+  schedule      String?  @map("schedule")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  recordWorkflows RecordWorkflow[]
+
+  @@index([workspaceId])
+  @@map("workflows")
+}
+
+model RecordWorkflow {
+  id        String   @id @default(uuid())
+  recordId  String   @map("record_id")
+  workflowId String  @map("workflow_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  record    Record   @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  workflow  Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@unique([recordId, workflowId])
+  @@index([recordId])
+  @@index([workflowId])
+  @@map("record_workflows")
+}
+
+model Item {
+  id          String      @id @default(uuid())
+  recordId    String      @map("record_id")
+  name        String      @map("name")
+  status      ItemStatus  @default(PENDING) @map("status")
+  metadata    Json?       @map("metadata")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  record      Record      @relation(fields: [recordId], references: [id], onDelete: Cascade)
+
+  @@index([recordId])
+  @@index([status])
+  @@map("items")
 }

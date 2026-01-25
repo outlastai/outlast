@@ -9,7 +9,74 @@
 * 🟢 You can import this file directly.
 */
 
+export const RecordType = {
+  GENERIC: 'GENERIC',
+  PURCHASE_ORDER: 'PURCHASE_ORDER',
+  INVENTORY_ITEM: 'INVENTORY_ITEM',
+  INVOICE: 'INVOICE',
+  SHIPMENT: 'SHIPMENT',
+  TICKET: 'TICKET',
+  RETURN: 'RETURN'
+} as const
+
+export type RecordType = (typeof RecordType)[keyof typeof RecordType]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const RecordStatus = {
+  OPEN: 'OPEN',
+  DONE: 'DONE',
+  BLOCKED: 'BLOCKED',
+  ARCHIVED: 'ARCHIVED'
+} as const
+
+export type RecordStatus = (typeof RecordStatus)[keyof typeof RecordStatus]
+
+
+export const RiskLevel = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+} as const
+
+export type RiskLevel = (typeof RiskLevel)[keyof typeof RiskLevel]
+
+
+export const PriorityLevel = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+} as const
+
+export type PriorityLevel = (typeof PriorityLevel)[keyof typeof PriorityLevel]
+
+
+export const SourceSystem = {
+  CSV: 'CSV',
+  ODOO: 'ODOO',
+  SALESFORCE: 'SALESFORCE',
+  SAP: 'SAP',
+  EMAIL: 'EMAIL',
+  MANUAL: 'MANUAL'
+} as const
+
+export type SourceSystem = (typeof SourceSystem)[keyof typeof SourceSystem]
+
+
+export const Channel = {
+  EMAIL: 'EMAIL',
+  PHONE: 'PHONE',
+  SMS: 'SMS',
+  WHATSAPP: 'WHATSAPP'
+} as const
+
+export type Channel = (typeof Channel)[keyof typeof Channel]
+
+
+export const ItemStatus = {
+  PENDING: 'PENDING',
+  RECEIVED: 'RECEIVED',
+  BACKORDERED: 'BACKORDERED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ItemStatus = (typeof ItemStatus)[keyof typeof ItemStatus]

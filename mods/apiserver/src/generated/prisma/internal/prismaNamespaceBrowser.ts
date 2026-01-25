@@ -51,7 +51,12 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Record: 'Record'
+  Record: 'Record',
+  RecordHistory: 'RecordHistory',
+  Contact: 'Contact',
+  Workflow: 'Workflow',
+  RecordWorkflow: 'RecordWorkflow',
+  Item: 'Item'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -72,12 +77,93 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const RecordScalarFieldEnum = {
   id: 'id',
+  workspaceId: 'workspaceId',
+  type: 'type',
   title: 'title',
+  status: 'status',
+  risk: 'risk',
+  priority: 'priority',
+  contactId: 'contactId',
+  dueAt: 'dueAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  sourceSystem: 'sourceSystem',
+  sourceRecordId: 'sourceRecordId',
+  metadata: 'metadata',
+  rawData: 'rawData'
+} as const
+
+export type RecordScalarFieldEnum = (typeof RecordScalarFieldEnum)[keyof typeof RecordScalarFieldEnum]
+
+
+export const RecordHistoryScalarFieldEnum = {
+  id: 'id',
+  recordId: 'recordId',
+  status: 'status',
+  aiNote: 'aiNote',
+  humanNote: 'humanNote',
+  agent: 'agent',
+  channel: 'channel',
+  channelMetadata: 'channelMetadata',
+  createdAt: 'createdAt'
+} as const
+
+export type RecordHistoryScalarFieldEnum = (typeof RecordHistoryScalarFieldEnum)[keyof typeof RecordHistoryScalarFieldEnum]
+
+
+export const ContactScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  preferredChannel: 'preferredChannel',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type RecordScalarFieldEnum = (typeof RecordScalarFieldEnum)[keyof typeof RecordScalarFieldEnum]
+export type ContactScalarFieldEnum = (typeof ContactScalarFieldEnum)[keyof typeof ContactScalarFieldEnum]
+
+
+export const WorkflowScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  name: 'name',
+  description: 'description',
+  model: 'model',
+  systemPrompt: 'systemPrompt',
+  temperature: 'temperature',
+  tools: 'tools',
+  staticRules: 'staticRules',
+  schedule: 'schedule',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkflowScalarFieldEnum = (typeof WorkflowScalarFieldEnum)[keyof typeof WorkflowScalarFieldEnum]
+
+
+export const RecordWorkflowScalarFieldEnum = {
+  id: 'id',
+  recordId: 'recordId',
+  workflowId: 'workflowId',
+  createdAt: 'createdAt'
+} as const
+
+export type RecordWorkflowScalarFieldEnum = (typeof RecordWorkflowScalarFieldEnum)[keyof typeof RecordWorkflowScalarFieldEnum]
+
+
+export const ItemScalarFieldEnum = {
+  id: 'id',
+  recordId: 'recordId',
+  name: 'name',
+  status: 'status',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ItemScalarFieldEnum = (typeof ItemScalarFieldEnum)[keyof typeof ItemScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -88,10 +174,35 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

@@ -9,4 +9,9 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Record.js'
+export type * from './models/RecordHistory.js'
+export type * from './models/Contact.js'
+export type * from './models/Workflow.js'
+export type * from './models/RecordWorkflow.js'
+export type * from './models/Item.js'
 export type * from './commonInputTypes.js'

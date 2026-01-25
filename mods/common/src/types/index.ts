@@ -1,4 +1,30 @@
 /**
  * Copyright (C) 2026 by Outlast. MIT License.
  */
-export type { DbClient, Record, RecordCreateInput } from "./client.js";
+export type {
+  // JSON type
+  JsonObject,
+  // Enum value types
+  RecordTypeValue,
+  RecordStatusValue,
+  RiskLevelValue,
+  PriorityLevelValue,
+  SourceSystemValue,
+  ChannelValue,
+  // Record types
+  RecordEntity,
+  Record,
+  RecordCreateInput,
+  RecordUpdateInput,
+  // Contact types
+  Contact,
+  ContactCreateInput,
+  // Workflow types
+  Workflow,
+  WorkflowCreateInput,
+  WorkflowUpdateInput,
+  // RecordHistory types
+  RecordHistory,
+  // Database client
+  DbClient
+} from "./client.js";

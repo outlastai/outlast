@@ -1,6 +1,16 @@
 /**
  * Copyright (C) 2026 by Outlast. MIT License.
  */
+
+/**
+ * Generic JSON object type for metadata fields.
+ */
+export type JsonObject = { [key: string]: unknown };
+
+// =============================================================================
+// Client Config
+// =============================================================================
+
 export type ClientConfig = {
   endpoint?: string;
   accessKeyId?: string;
@@ -12,6 +22,10 @@ export type LoginResponse = {
   idToken?: string;
   accessKeyId?: string;
 };
+
+// =============================================================================
+// Workspace Types
+// =============================================================================
 
 export type Workspace = {
   ref: string;
@@ -39,6 +53,10 @@ export type UpdateWorkspaceRequest = {
 export type DeleteWorkspaceResponse = {
   ref: string;
 };
+
+// =============================================================================
+// API Key Types
+// =============================================================================
 
 export type CreateApiKeyRequest = {
   role: "WORKSPACE_OWNER" | "WORKSPACE_ADMIN" | "WORKSPACE_MEMBER";
@@ -76,13 +94,189 @@ export type RegenerateApiKeyResponse = {
   accessKeySecret: string;
 };
 
-export type Record = {
+// =============================================================================
+// Record Types
+// =============================================================================
+
+export type RecordType =
+  | "GENERIC"
+  | "PURCHASE_ORDER"
+  | "INVENTORY_ITEM"
+  | "INVOICE"
+  | "SHIPMENT"
+  | "TICKET"
+  | "RETURN";
+
+export type RecordStatus = "OPEN" | "DONE" | "BLOCKED" | "ARCHIVED";
+
+export type RiskLevel = "LOW" | "MEDIUM" | "HIGH";
+
+export type PriorityLevel = "LOW" | "MEDIUM" | "HIGH";
+
+export type SourceSystem = "CSV" | "ODOO" | "SALESFORCE" | "SAP" | "EMAIL" | "MANUAL";
+
+export type Channel = "EMAIL" | "PHONE" | "SMS" | "WHATSAPP";
+
+export type RecordEntity = {
   id: string;
+  workspaceId: string;
+  type: RecordType;
   title: string;
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
+  status: RecordStatus;
+  risk: RiskLevel | null;
+  priority: PriorityLevel | null;
+  contactId: string | null;
+  dueAt: string | Date | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  sourceSystem: SourceSystem;
+  sourceRecordId: string | null;
+  metadata: JsonObject | null;
+  rawData: JsonObject | null;
 };
+
+/**
+ * @deprecated Use RecordEntity instead.
+ */
+export type Record = RecordEntity;
 
 export type CreateRecordRequest = {
   title: string;
+  type?: RecordType;
+  status?: RecordStatus;
+  risk?: RiskLevel;
+  priority?: PriorityLevel;
+  contactId?: string | null;
+  dueAt?: string | Date | null;
+  sourceSystem?: SourceSystem;
+  sourceRecordId?: string | null;
+  metadata?: JsonObject | null;
+  rawData?: JsonObject | null;
+};
+
+export type UpdateRecordRequest = {
+  id: string;
+  title?: string;
+  type?: RecordType;
+  status?: RecordStatus;
+  risk?: RiskLevel | null;
+  priority?: PriorityLevel | null;
+  contactId?: string | null;
+  dueAt?: string | Date | null;
+  metadata?: JsonObject | null;
+};
+
+export type DeleteRecordRequest = {
+  id: string;
+};
+
+export type ListRecordsRequest = {
+  skip?: number;
+  take?: number;
+  status?: RecordStatus;
+  type?: RecordType;
+};
+
+export type GetRecordHistoryRequest = {
+  recordId: string;
+  skip?: number;
+  take?: number;
+};
+
+// =============================================================================
+// Record History Types
+// =============================================================================
+
+export type RecordHistory = {
+  id: string;
+  recordId: string;
+  status: RecordStatus;
+  aiNote: string | null;
+  humanNote: string | null;
+  agent: string;
+  channel: Channel;
+  channelMetadata: JsonObject | null;
+  createdAt: string | Date;
+};
+
+// =============================================================================
+// Contact Types
+// =============================================================================
+
+export type Contact = {
+  id: string;
+  workspaceId: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  preferredChannel: Channel;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
+
+export type CreateContactRequest = {
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  preferredChannel: Channel;
+};
+
+export type DeleteContactRequest = {
+  id: string;
+};
+
+export type ListContactsRequest = {
+  skip?: number;
+  take?: number;
+};
+
+// =============================================================================
+// Workflow Types
+// =============================================================================
+
+export type Workflow = {
+  id: string;
+  workspaceId: string;
+  name: string;
+  description: string | null;
+  model: string | null;
+  systemPrompt: string | null;
+  temperature: number | null;
+  tools: unknown[] | null;
+  staticRules: JsonObject | null;
+  schedule: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
+
+export type CreateWorkflowRequest = {
+  name: string;
+  description?: string | null;
+  model?: string | null;
+  systemPrompt?: string | null;
+  temperature?: number | null;
+  tools?: unknown[] | null;
+  staticRules?: JsonObject | null;
+  schedule?: string | null;
+};
+
+export type UpdateWorkflowRequest = {
+  id: string;
+  name?: string;
+  description?: string | null;
+  model?: string | null;
+  systemPrompt?: string | null;
+  temperature?: number | null;
+  tools?: unknown[] | null;
+  staticRules?: JsonObject | null;
+  schedule?: string | null;
+};
+
+export type DeleteWorkflowRequest = {
+  id: string;
+};
+
+export type ListWorkflowsRequest = {
+  skip?: number;
+  take?: number;
 };

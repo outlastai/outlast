@@ -22,3 +22,28 @@ export * from './enums.js';
  * 
  */
 export type Record = Prisma.RecordModel
+/**
+ * Model RecordHistory
+ * 
+ */
+export type RecordHistory = Prisma.RecordHistoryModel
+/**
+ * Model Contact
+ * 
+ */
+export type Contact = Prisma.ContactModel
+/**
+ * Model Workflow
+ * 
+ */
+export type Workflow = Prisma.WorkflowModel
+/**
+ * Model RecordWorkflow
+ * 
+ */
+export type RecordWorkflow = Prisma.RecordWorkflowModel
+/**
+ * Model Item
+ * 
+ */
+export type Item = Prisma.ItemModel

@@ -22,13 +22,73 @@ export {
 
 // Schemas
 export {
+  // Record schemas
   createRecordSchema,
   getRecordSchema,
+  updateRecordSchema,
+  deleteRecordSchema,
   listRecordsSchema,
+  getRecordHistorySchema,
   type CreateRecordInput,
   type GetRecordInput,
-  type ListRecordsInput
+  type UpdateRecordInput,
+  type DeleteRecordInput,
+  type ListRecordsInput,
+  type GetRecordHistoryInput,
+  // Record enums
+  RecordType,
+  RecordStatus,
+  RiskLevel,
+  PriorityLevel,
+  SourceSystem,
+  Channel,
+  // Contact schemas
+  createContactSchema,
+  getContactSchema,
+  deleteContactSchema,
+  listContactsSchema,
+  type CreateContactInput,
+  type GetContactInput,
+  type DeleteContactInput,
+  type ListContactsInput,
+  // Workflow schemas
+  createWorkflowSchema,
+  getWorkflowSchema,
+  updateWorkflowSchema,
+  deleteWorkflowSchema,
+  listWorkflowsSchema,
+  type CreateWorkflowInput,
+  type GetWorkflowInput,
+  type UpdateWorkflowInput,
+  type DeleteWorkflowInput,
+  type ListWorkflowsInput
 } from "./schemas/index.js";
 
 // Types (entities and client)
-export type { DbClient, Record, RecordCreateInput } from "./types/index.js";
+export type {
+  // JSON type
+  JsonObject,
+  // Enum value types
+  RecordTypeValue,
+  RecordStatusValue,
+  RiskLevelValue,
+  PriorityLevelValue,
+  SourceSystemValue,
+  ChannelValue,
+  // Record types
+  RecordEntity,
+  Record,
+  RecordCreateInput,
+  RecordUpdateInput,
+  // Contact types
+  Contact,
+  ContactCreateInput,
+  // Workflow types
+  Workflow,
+  WorkflowCreateInput,
+  WorkflowUpdateInput,
+  // RecordHistory types
+  RecordHistory,
+  // Database client
+  DbClient
+} from "./types/index.js";
