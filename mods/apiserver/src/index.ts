@@ -16,6 +16,7 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter, createContext } from "./trpc/index.js";
 import { assertEnvsAreSet, ValidationError } from "@outlast/common";
 import { logger } from "./logger.js";
+import { createOwnerUser } from "./startup.js";
 
 // Re-export AppRouter type for clients
 export type { AppRouter } from "./trpc/index.js";
@@ -23,13 +24,7 @@ export type { AppRouter } from "./trpc/index.js";
 const app = express();
 const PORT = process.env.OUTLAST_PORT || 3000;
 
-// Public path for serving static files
-const PUBLIC_PATH = process.env.OUTLAST_PUBLIC_PATH || "./public";
-
 app.use(express.json());
-
-// Serve static files publicly at /images/:filename
-app.use("/images", express.static(PUBLIC_PATH));
 
 // Health check endpoint
 app.get("/health", (_req, res) => {
@@ -59,9 +54,16 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 });
 
 // Start server
-app.listen(PORT, () => {
-  logger.info("api server started", {
-    port: PORT,
-    publicPath: PUBLIC_PATH
+async function start() {
+  // Create owner user if environment variables are set
+  await createOwnerUser();
+
+  app.listen(PORT, () => {
+    logger.info("api server started", { port: PORT });
   });
+}
+
+start().catch((err) => {
+  logger.error("failed to start server", { error: err.message });
+  process.exit(1);
 });
