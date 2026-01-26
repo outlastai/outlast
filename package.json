@@ -12,6 +12,7 @@
     "build": "lerna run build",
     "test": "lerna run test",
     "typecheck": "lerna run typecheck",
+    "start:postgres": "docker compose up -d postgres",
     "start:apiserver": "LOGS_LEVEL=verbose npm start -w @outlast/apiserver",
     "start:dashboard": "npm run dev -w @outlast/dashboard",
     "lint": "eslint .",

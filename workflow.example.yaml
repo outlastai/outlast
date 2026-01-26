@@ -17,8 +17,6 @@ tools:
 schedule: "*/2 * * * *"  # every 2 minutes
 
 emailTemplate: |
-  Subject: Follow-up: Invoice {{record.title}}
-  
   Dear {{contact.name}},
   
   This is a friendly reminder regarding invoice {{record.title}}.

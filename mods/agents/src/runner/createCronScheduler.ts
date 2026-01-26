@@ -60,7 +60,7 @@ export function createCronScheduler(deps: CronSchedulerDependencies) {
         }
       }
 
-      logger.info("Cron scheduler started", { jobCount: jobs.size });
+      logger.info("cron scheduler started", { jobCount: jobs.size });
     },
 
     /**
@@ -71,7 +71,7 @@ export function createCronScheduler(deps: CronSchedulerDependencies) {
         job.task.stop();
       }
       jobs.clear();
-      logger.info("Cron scheduler stopped");
+      logger.info("cron scheduler stopped");
     },
 
     /**
@@ -96,7 +96,7 @@ export function createCronScheduler(deps: CronSchedulerDependencies) {
 
       // Create new job
       const task = cron.schedule(workflow.schedule, async () => {
-        logger.info("Running scheduled workflow", {
+        logger.info("running scheduled workflow", {
           workflowId: workflow.id,
           workflowName: workflow.name
         });
@@ -109,7 +109,7 @@ export function createCronScheduler(deps: CronSchedulerDependencies) {
             actionsTaken: result.actionsTaken
           });
         } catch (error) {
-          logger.error("Workflow failed", {
+          logger.error("workflow failed", {
             workflowId: workflow.id,
             error: error instanceof Error ? error.message : String(error)
           });
@@ -123,7 +123,7 @@ export function createCronScheduler(deps: CronSchedulerDependencies) {
         task
       });
 
-      logger.info("Workflow scheduled", {
+      logger.info("workflow scheduled", {
         workflowId: workflow.id,
         schedule: workflow.schedule
       });
@@ -137,7 +137,7 @@ export function createCronScheduler(deps: CronSchedulerDependencies) {
       if (job) {
         job.task.stop();
         jobs.delete(workflowId);
-        logger.info("Workflow unscheduled", { workflowId });
+        logger.info("workflow unscheduled", { workflowId });
       }
     },
 
