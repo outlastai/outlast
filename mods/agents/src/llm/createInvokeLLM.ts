@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  *
  * Create LLM invocation function with tool calling support.
  */

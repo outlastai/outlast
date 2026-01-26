@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { confirm, input, password, select } from "@inquirer/prompts";
 import { Client, Workspaces, ApiKeys } from "@outlast/sdk";

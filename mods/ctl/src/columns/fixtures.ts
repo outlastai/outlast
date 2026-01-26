@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  *
  * Mock data fixtures for testing column width alignment.
  * These fixtures include edge cases to ensure columns handle realistic data.

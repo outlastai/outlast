@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { Args, Command } from "@oclif/core";
 import { getActiveWorkspace, getConfig, setActiveWorkspace } from "../../config/index.js";

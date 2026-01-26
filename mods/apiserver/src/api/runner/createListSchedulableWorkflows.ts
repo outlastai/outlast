@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { logger } from "../../logger.js";
 import type { RunnerDbClient, SchedulableWorkflow } from "./types.js";

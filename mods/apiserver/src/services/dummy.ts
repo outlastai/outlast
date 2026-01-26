@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  *
  * Dummy service implementations for email and calls.
  * Replace these with real implementations when ready.

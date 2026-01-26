@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 
 import eslint from "@eslint/js";
@@ -28,7 +28,7 @@ export default tseslint.config(
         "error",
         {
           source: "string",
-          content: "Copyright (C) 2026 by Outlast. MIT License."
+          content: "Copyright (C) 2026 by Outlast."
         }
       ]
     }

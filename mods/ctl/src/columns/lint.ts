@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  *
  * Column width linting script.
  * Validates that mock data fits within defined column widths.

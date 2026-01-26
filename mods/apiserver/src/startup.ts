@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { upsertDefaultUser } from "@fonoster/identity";
 import { identityConfig } from "@outlast/identity";

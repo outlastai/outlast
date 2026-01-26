@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { Client } from "@outlast/sdk";

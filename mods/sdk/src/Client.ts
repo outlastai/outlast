@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import type { AppRouter } from "@outlast/apiserver"; // type-only, no runtime dependency

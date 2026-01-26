@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  *
  * Column type definitions with width constraints for CLI table rendering.
  * These widths are based on realistic data expectations from the schema.

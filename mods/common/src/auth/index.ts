@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 export { toPem } from "./getPublicKey.js";
 export { verifyToken } from "./verifyToken.js";

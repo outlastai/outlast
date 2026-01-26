@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  *
  * Static pre-check orchestrator.
  * Runs checks in order to determine if AI should be invoked.

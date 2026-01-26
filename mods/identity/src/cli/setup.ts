@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { setupIdentityDatabase } from "../setupDatabase.js";
 import { OUTLAST_IDENTITY_DATABASE_URL } from "../envs.js";

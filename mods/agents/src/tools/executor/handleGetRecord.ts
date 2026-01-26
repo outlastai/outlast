@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import type { ToolResult } from "../types.js";
 import type { ToolExecutorDependencies } from "./types.js";

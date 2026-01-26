@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import type { IncomingHttpHeaders } from "http";
 import { verifyToken, type TokenPayload } from "@outlast/common";

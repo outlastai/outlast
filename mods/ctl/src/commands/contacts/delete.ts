@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { confirm } from "@inquirer/prompts";
 import { Args, Flags } from "@oclif/core";

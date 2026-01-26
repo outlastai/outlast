@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { Flags } from "@oclif/core";
 import { Contacts } from "@outlast/sdk";

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  *
  * Test setup utilities for integration tests.
  * Provides helpers for creating tRPC callers and managing test state.

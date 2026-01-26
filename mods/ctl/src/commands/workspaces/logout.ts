@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { Args, Command } from "@oclif/core";
 import { getConfig, removeWorkspace } from "../../config/index.js";

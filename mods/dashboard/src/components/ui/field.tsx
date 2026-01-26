@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 import { useMemo } from "react";
 import { cva, type VariantProps } from "class-variance-authority";

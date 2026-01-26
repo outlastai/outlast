@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  *
  * Database seed script - creates sample data for development/testing.
  * Uses upsert operations with fixed IDs to be idempotent (safe to run multiple times).

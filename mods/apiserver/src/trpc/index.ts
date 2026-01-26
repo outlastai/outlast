@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 export { appRouter, type AppRouter } from "./routers/index.js";
 export { createContext, type Context } from "./context.js";

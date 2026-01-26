@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 export { checkMaxAttempts } from "./checkMaxAttempts.js";
 export { checkTooSoon } from "./checkTooSoon.js";

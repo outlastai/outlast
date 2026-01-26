@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2026 by Outlast. MIT License.
+ * Copyright (C) 2026 by Outlast.
  */
 export { createWorkflowRunner } from "./createWorkflowRunner.js";
 export { createCronScheduler, type CronSchedulerDependencies } from "./createCronScheduler.js";
