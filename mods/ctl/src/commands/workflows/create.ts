@@ -4,10 +4,12 @@
 import * as fs from "node:fs/promises";
 import { confirm, input, editor } from "@inquirer/prompts";
 import { Flags } from "@oclif/core";
+import { workflowFileSchema } from "@outlast/common";
 import { Workflows, type CreateWorkflowRequest } from "@outlast/sdk";
 import { parse as parseYaml } from "yaml";
 import { BaseCommand } from "../../BaseCommand.js";
 import errorHandler from "../../errorHandler.js";
+import { formatZodErrors } from "../../utils/formatZodErrors.js";
 
 export default class Create extends BaseCommand<typeof Create> {
   static override readonly description = "create a new workflow";
@@ -33,13 +35,23 @@ export default class Create extends BaseCommand<typeof Create> {
     if (fromFile) {
       try {
         const content = await fs.readFile(fromFile, "utf-8");
+        let rawData: unknown;
 
         if (fromFile.endsWith(".yaml") || fromFile.endsWith(".yml")) {
-          workflowData = parseYaml(content) as CreateWorkflowRequest;
+          rawData = parseYaml(content);
         } else {
-          workflowData = JSON.parse(content) as CreateWorkflowRequest;
+          rawData = JSON.parse(content);
         }
+
+        // Validate with Zod schema
+        const parseResult = workflowFileSchema.safeParse(rawData);
+        if (!parseResult.success) {
+          this.error(`Invalid workflow file:\n${formatZodErrors(parseResult.error)}`);
+        }
+
+        workflowData = parseResult.data as CreateWorkflowRequest;
       } catch (e) {
+        if ((e as Error).name === "ExitPromptError") throw e;
         this.error(`Failed to read file: ${(e as Error).message}`);
       }
     } else {

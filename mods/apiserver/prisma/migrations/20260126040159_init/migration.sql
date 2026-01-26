@@ -16,6 +16,9 @@ CREATE TYPE "SourceSystem" AS ENUM ('CSV', 'ODOO', 'SALESFORCE', 'SAP', 'EMAIL',
 -- CreateEnum
 CREATE TYPE "Channel" AS ENUM ('EMAIL', 'PHONE', 'SMS', 'WHATSAPP');
 
+-- CreateEnum
+CREATE TYPE "ItemStatus" AS ENUM ('PENDING', 'RECEIVED', 'BACKORDERED', 'CANCELLED');
+
 -- CreateTable
 CREATE TABLE "records" (
     "id" TEXT NOT NULL,
@@ -76,12 +79,32 @@ CREATE TABLE "workflows" (
     "system_prompt" TEXT,
     "temperature" DOUBLE PRECISION,
     "tools" JSONB,
-    "static_rules" JSONB,
     "schedule" TEXT,
+    "email_template" TEXT,
+    "call_prompt" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "workflows_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "workflow_scheduler_rules" (
+    "id" TEXT NOT NULL,
+    "workflow_id" TEXT NOT NULL,
+    "min_days_between_actions" INTEGER NOT NULL DEFAULT 3,
+    "max_action_attempts" INTEGER NOT NULL DEFAULT 5,
+    "record_too_recent_days" INTEGER NOT NULL DEFAULT 1,
+    "recent_update_cooldown_days" INTEGER NOT NULL DEFAULT 1,
+    "escalation_threshold" INTEGER NOT NULL DEFAULT 3,
+    "high_priority_min_days" INTEGER NOT NULL DEFAULT 1,
+    "low_priority_multiplier" DOUBLE PRECISION NOT NULL DEFAULT 2,
+    "enabled_statuses" JSONB NOT NULL DEFAULT '["OPEN"]',
+    "batch_size" INTEGER NOT NULL DEFAULT 50,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "workflow_scheduler_rules_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -92,6 +115,19 @@ CREATE TABLE "record_workflows" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "record_workflows_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "items" (
+    "id" TEXT NOT NULL,
+    "record_id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "status" "ItemStatus" NOT NULL DEFAULT 'PENDING',
+    "metadata" JSONB,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "items_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -128,6 +164,9 @@ CREATE INDEX "contacts_phone_idx" ON "contacts"("phone");
 CREATE INDEX "workflows_workspace_id_idx" ON "workflows"("workspace_id");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "workflow_scheduler_rules_workflow_id_key" ON "workflow_scheduler_rules"("workflow_id");
+
+-- CreateIndex
 CREATE INDEX "record_workflows_record_id_idx" ON "record_workflows"("record_id");
 
 -- CreateIndex
@@ -136,6 +175,12 @@ CREATE INDEX "record_workflows_workflow_id_idx" ON "record_workflows"("workflow_
 -- CreateIndex
 CREATE UNIQUE INDEX "record_workflows_record_id_workflow_id_key" ON "record_workflows"("record_id", "workflow_id");
 
+-- CreateIndex
+CREATE INDEX "items_record_id_idx" ON "items"("record_id");
+
+-- CreateIndex
+CREATE INDEX "items_status_idx" ON "items"("status");
+
 -- AddForeignKey
 ALTER TABLE "records" ADD CONSTRAINT "records_contact_id_fkey" FOREIGN KEY ("contact_id") REFERENCES "contacts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -143,7 +188,13 @@ ALTER TABLE "records" ADD CONSTRAINT "records_contact_id_fkey" FOREIGN KEY ("con
 ALTER TABLE "record_history" ADD CONSTRAINT "record_history_record_id_fkey" FOREIGN KEY ("record_id") REFERENCES "records"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "workflow_scheduler_rules" ADD CONSTRAINT "workflow_scheduler_rules_workflow_id_fkey" FOREIGN KEY ("workflow_id") REFERENCES "workflows"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "record_workflows" ADD CONSTRAINT "record_workflows_record_id_fkey" FOREIGN KEY ("record_id") REFERENCES "records"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "record_workflows" ADD CONSTRAINT "record_workflows_workflow_id_fkey" FOREIGN KEY ("workflow_id") REFERENCES "workflows"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "items" ADD CONSTRAINT "items_record_id_fkey" FOREIGN KEY ("record_id") REFERENCES "records"("id") ON DELETE CASCADE ON UPDATE CASCADE;

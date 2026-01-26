@@ -66,3 +66,14 @@ export {
   type GetSchedulerRulesByWorkflowInput,
   type DeleteSchedulerRulesInput
 } from "./schedulerRules.js";
+
+export {
+  // Workflow file schemas
+  workflowFileSchema,
+  workflowUpdateFileSchema,
+  schedulerRulesFileSchema,
+  // Workflow file types
+  type WorkflowFileInput,
+  type WorkflowUpdateFileInput,
+  type SchedulerRulesFileInput
+} from "./workflowFile.js";

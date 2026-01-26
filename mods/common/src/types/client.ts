@@ -137,8 +137,9 @@ export interface Workflow {
   systemPrompt: string | null;
   temperature: number | null;
   tools: unknown[] | null;
-  staticRules: JsonObject | null;
   schedule: string | null;
+  emailTemplate: string | null;
+  callPrompt: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -154,8 +155,9 @@ export interface WorkflowCreateInput {
   systemPrompt?: string | null;
   temperature?: number | null;
   tools?: unknown[] | null;
-  staticRules?: JsonObject | null;
   schedule?: string | null;
+  emailTemplate?: string | null;
+  callPrompt?: string | null;
 }
 
 /**
@@ -168,8 +170,9 @@ export interface WorkflowUpdateInput {
   systemPrompt?: string | null;
   temperature?: number | null;
   tools?: unknown[] | null;
-  staticRules?: JsonObject | null;
   schedule?: string | null;
+  emailTemplate?: string | null;
+  callPrompt?: string | null;
 }
 
 // =============================================================================

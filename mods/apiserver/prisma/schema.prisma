@@ -146,6 +146,8 @@ model Workflow {
   temperature   Float?   @map("temperature")
   tools         Json?    @map("tools")
   schedule      String?  @map("schedule")
+  emailTemplate String?  @map("email_template") @db.Text
+  callPrompt    String?  @map("call_prompt") @db.Text
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 

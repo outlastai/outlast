@@ -136,6 +136,8 @@ export const WorkflowScalarFieldEnum = {
   temperature: 'temperature',
   tools: 'tools',
   schedule: 'schedule',
+  emailTemplate: 'emailTemplate',
+  callPrompt: 'callPrompt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

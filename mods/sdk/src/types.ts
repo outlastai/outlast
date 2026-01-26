@@ -243,8 +243,9 @@ export type Workflow = {
   systemPrompt: string | null;
   temperature: number | null;
   tools: unknown[] | null;
-  staticRules: JsonObject | null;
   schedule: string | null;
+  emailTemplate: string | null;
+  callPrompt: string | null;
   createdAt: string | Date;
   updatedAt: string | Date;
 };
@@ -256,8 +257,9 @@ export type CreateWorkflowRequest = {
   systemPrompt?: string | null;
   temperature?: number | null;
   tools?: unknown[] | null;
-  staticRules?: JsonObject | null;
   schedule?: string | null;
+  emailTemplate?: string | null;
+  callPrompt?: string | null;
 };
 
 export type UpdateWorkflowRequest = {
@@ -268,8 +270,9 @@ export type UpdateWorkflowRequest = {
   systemPrompt?: string | null;
   temperature?: number | null;
   tools?: unknown[] | null;
-  staticRules?: JsonObject | null;
   schedule?: string | null;
+  emailTemplate?: string | null;
+  callPrompt?: string | null;
 };
 
 export type DeleteWorkflowRequest = {

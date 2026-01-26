@@ -61,7 +61,14 @@ export {
   type GetWorkflowInput,
   type UpdateWorkflowInput,
   type DeleteWorkflowInput,
-  type ListWorkflowsInput
+  type ListWorkflowsInput,
+  // Workflow file schemas
+  workflowFileSchema,
+  workflowUpdateFileSchema,
+  schedulerRulesFileSchema,
+  type WorkflowFileInput,
+  type WorkflowUpdateFileInput,
+  type SchedulerRulesFileInput
 } from "./schemas/index.js";
 
 // Types (entities and client)

@@ -13,7 +13,9 @@ export const createWorkflowSchema = z.object({
   systemPrompt: z.string().nullable().optional(),
   temperature: z.number().min(0).max(2).nullable().optional(),
   tools: z.array(z.unknown()).nullable().optional(),
-  schedule: z.string().nullable().optional()
+  schedule: z.string().nullable().optional(),
+  emailTemplate: z.string().nullable().optional(),
+  callPrompt: z.string().nullable().optional()
 });
 
 /**
@@ -44,7 +46,9 @@ export const updateWorkflowSchema = z.object({
   systemPrompt: z.string().nullable().optional(),
   temperature: z.number().min(0).max(2).nullable().optional(),
   tools: z.array(z.unknown()).nullable().optional(),
-  schedule: z.string().nullable().optional()
+  schedule: z.string().nullable().optional(),
+  emailTemplate: z.string().nullable().optional(),
+  callPrompt: z.string().nullable().optional()
 });
 
 /**

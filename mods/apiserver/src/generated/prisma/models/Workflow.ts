@@ -43,6 +43,8 @@ export type WorkflowMinAggregateOutputType = {
   systemPrompt: string | null
   temperature: number | null
   schedule: string | null
+  emailTemplate: string | null
+  callPrompt: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +58,8 @@ export type WorkflowMaxAggregateOutputType = {
   systemPrompt: string | null
   temperature: number | null
   schedule: string | null
+  emailTemplate: string | null
+  callPrompt: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -70,6 +74,8 @@ export type WorkflowCountAggregateOutputType = {
   temperature: number
   tools: number
   schedule: number
+  emailTemplate: number
+  callPrompt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -93,6 +99,8 @@ export type WorkflowMinAggregateInputType = {
   systemPrompt?: true
   temperature?: true
   schedule?: true
+  emailTemplate?: true
+  callPrompt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -106,6 +114,8 @@ export type WorkflowMaxAggregateInputType = {
   systemPrompt?: true
   temperature?: true
   schedule?: true
+  emailTemplate?: true
+  callPrompt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -120,6 +130,8 @@ export type WorkflowCountAggregateInputType = {
   temperature?: true
   tools?: true
   schedule?: true
+  emailTemplate?: true
+  callPrompt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -221,6 +233,8 @@ export type WorkflowGroupByOutputType = {
   temperature: number | null
   tools: runtime.JsonValue | null
   schedule: string | null
+  emailTemplate: string | null
+  callPrompt: string | null
   createdAt: Date
   updatedAt: Date
   _count: WorkflowCountAggregateOutputType | null
@@ -258,6 +272,8 @@ export type WorkflowWhereInput = {
   temperature?: Prisma.FloatNullableFilter<"Workflow"> | number | null
   tools?: Prisma.JsonNullableFilter<"Workflow">
   schedule?: Prisma.StringNullableFilter<"Workflow"> | string | null
+  emailTemplate?: Prisma.StringNullableFilter<"Workflow"> | string | null
+  callPrompt?: Prisma.StringNullableFilter<"Workflow"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
   recordWorkflows?: Prisma.RecordWorkflowListRelationFilter
@@ -274,6 +290,8 @@ export type WorkflowOrderByWithRelationInput = {
   temperature?: Prisma.SortOrderInput | Prisma.SortOrder
   tools?: Prisma.SortOrderInput | Prisma.SortOrder
   schedule?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailTemplate?: Prisma.SortOrderInput | Prisma.SortOrder
+  callPrompt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   recordWorkflows?: Prisma.RecordWorkflowOrderByRelationAggregateInput
@@ -293,6 +311,8 @@ export type WorkflowWhereUniqueInput = Prisma.AtLeast<{
   temperature?: Prisma.FloatNullableFilter<"Workflow"> | number | null
   tools?: Prisma.JsonNullableFilter<"Workflow">
   schedule?: Prisma.StringNullableFilter<"Workflow"> | string | null
+  emailTemplate?: Prisma.StringNullableFilter<"Workflow"> | string | null
+  callPrompt?: Prisma.StringNullableFilter<"Workflow"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workflow"> | Date | string
   recordWorkflows?: Prisma.RecordWorkflowListRelationFilter
@@ -309,6 +329,8 @@ export type WorkflowOrderByWithAggregationInput = {
   temperature?: Prisma.SortOrderInput | Prisma.SortOrder
   tools?: Prisma.SortOrderInput | Prisma.SortOrder
   schedule?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailTemplate?: Prisma.SortOrderInput | Prisma.SortOrder
+  callPrompt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.WorkflowCountOrderByAggregateInput
@@ -331,6 +353,8 @@ export type WorkflowScalarWhereWithAggregatesInput = {
   temperature?: Prisma.FloatNullableWithAggregatesFilter<"Workflow"> | number | null
   tools?: Prisma.JsonNullableWithAggregatesFilter<"Workflow">
   schedule?: Prisma.StringNullableWithAggregatesFilter<"Workflow"> | string | null
+  emailTemplate?: Prisma.StringNullableWithAggregatesFilter<"Workflow"> | string | null
+  callPrompt?: Prisma.StringNullableWithAggregatesFilter<"Workflow"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Workflow"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Workflow"> | Date | string
 }
@@ -345,6 +369,8 @@ export type WorkflowCreateInput = {
   temperature?: number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: string | null
+  emailTemplate?: string | null
+  callPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   recordWorkflows?: Prisma.RecordWorkflowCreateNestedManyWithoutWorkflowInput
@@ -361,6 +387,8 @@ export type WorkflowUncheckedCreateInput = {
   temperature?: number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: string | null
+  emailTemplate?: string | null
+  callPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   recordWorkflows?: Prisma.RecordWorkflowUncheckedCreateNestedManyWithoutWorkflowInput
@@ -377,6 +405,8 @@ export type WorkflowUpdateInput = {
   temperature?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recordWorkflows?: Prisma.RecordWorkflowUpdateManyWithoutWorkflowNestedInput
@@ -393,6 +423,8 @@ export type WorkflowUncheckedUpdateInput = {
   temperature?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recordWorkflows?: Prisma.RecordWorkflowUncheckedUpdateManyWithoutWorkflowNestedInput
@@ -409,6 +441,8 @@ export type WorkflowCreateManyInput = {
   temperature?: number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: string | null
+  emailTemplate?: string | null
+  callPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -423,6 +457,8 @@ export type WorkflowUpdateManyMutationInput = {
   temperature?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -437,6 +473,8 @@ export type WorkflowUncheckedUpdateManyInput = {
   temperature?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -451,6 +489,8 @@ export type WorkflowCountOrderByAggregateInput = {
   temperature?: Prisma.SortOrder
   tools?: Prisma.SortOrder
   schedule?: Prisma.SortOrder
+  emailTemplate?: Prisma.SortOrder
+  callPrompt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -468,6 +508,8 @@ export type WorkflowMaxOrderByAggregateInput = {
   systemPrompt?: Prisma.SortOrder
   temperature?: Prisma.SortOrder
   schedule?: Prisma.SortOrder
+  emailTemplate?: Prisma.SortOrder
+  callPrompt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -481,6 +523,8 @@ export type WorkflowMinOrderByAggregateInput = {
   systemPrompt?: Prisma.SortOrder
   temperature?: Prisma.SortOrder
   schedule?: Prisma.SortOrder
+  emailTemplate?: Prisma.SortOrder
+  callPrompt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -540,6 +584,8 @@ export type WorkflowCreateWithoutSchedulerRulesInput = {
   temperature?: number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: string | null
+  emailTemplate?: string | null
+  callPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   recordWorkflows?: Prisma.RecordWorkflowCreateNestedManyWithoutWorkflowInput
@@ -555,6 +601,8 @@ export type WorkflowUncheckedCreateWithoutSchedulerRulesInput = {
   temperature?: number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: string | null
+  emailTemplate?: string | null
+  callPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   recordWorkflows?: Prisma.RecordWorkflowUncheckedCreateNestedManyWithoutWorkflowInput
@@ -586,6 +634,8 @@ export type WorkflowUpdateWithoutSchedulerRulesInput = {
   temperature?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recordWorkflows?: Prisma.RecordWorkflowUpdateManyWithoutWorkflowNestedInput
@@ -601,6 +651,8 @@ export type WorkflowUncheckedUpdateWithoutSchedulerRulesInput = {
   temperature?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   recordWorkflows?: Prisma.RecordWorkflowUncheckedUpdateManyWithoutWorkflowNestedInput
@@ -616,6 +668,8 @@ export type WorkflowCreateWithoutRecordWorkflowsInput = {
   temperature?: number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: string | null
+  emailTemplate?: string | null
+  callPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   schedulerRules?: Prisma.WorkflowSchedulerRulesCreateNestedOneWithoutWorkflowInput
@@ -631,6 +685,8 @@ export type WorkflowUncheckedCreateWithoutRecordWorkflowsInput = {
   temperature?: number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: string | null
+  emailTemplate?: string | null
+  callPrompt?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   schedulerRules?: Prisma.WorkflowSchedulerRulesUncheckedCreateNestedOneWithoutWorkflowInput
@@ -662,6 +718,8 @@ export type WorkflowUpdateWithoutRecordWorkflowsInput = {
   temperature?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   schedulerRules?: Prisma.WorkflowSchedulerRulesUpdateOneWithoutWorkflowNestedInput
@@ -677,6 +735,8 @@ export type WorkflowUncheckedUpdateWithoutRecordWorkflowsInput = {
   temperature?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   tools?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   schedule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailTemplate?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  callPrompt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   schedulerRules?: Prisma.WorkflowSchedulerRulesUncheckedUpdateOneWithoutWorkflowNestedInput
@@ -723,6 +783,8 @@ export type WorkflowSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   temperature?: boolean
   tools?: boolean
   schedule?: boolean
+  emailTemplate?: boolean
+  callPrompt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   recordWorkflows?: boolean | Prisma.Workflow$recordWorkflowsArgs<ExtArgs>
@@ -740,6 +802,8 @@ export type WorkflowSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   temperature?: boolean
   tools?: boolean
   schedule?: boolean
+  emailTemplate?: boolean
+  callPrompt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["workflow"]>
@@ -754,6 +818,8 @@ export type WorkflowSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   temperature?: boolean
   tools?: boolean
   schedule?: boolean
+  emailTemplate?: boolean
+  callPrompt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["workflow"]>
@@ -768,11 +834,13 @@ export type WorkflowSelectScalar = {
   temperature?: boolean
   tools?: boolean
   schedule?: boolean
+  emailTemplate?: boolean
+  callPrompt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type WorkflowOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "name" | "description" | "model" | "systemPrompt" | "temperature" | "tools" | "schedule" | "createdAt" | "updatedAt", ExtArgs["result"]["workflow"]>
+export type WorkflowOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "name" | "description" | "model" | "systemPrompt" | "temperature" | "tools" | "schedule" | "emailTemplate" | "callPrompt" | "createdAt" | "updatedAt", ExtArgs["result"]["workflow"]>
 export type WorkflowInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   recordWorkflows?: boolean | Prisma.Workflow$recordWorkflowsArgs<ExtArgs>
   schedulerRules?: boolean | Prisma.Workflow$schedulerRulesArgs<ExtArgs>
@@ -797,6 +865,8 @@ export type $WorkflowPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     temperature: number | null
     tools: runtime.JsonValue | null
     schedule: string | null
+    emailTemplate: string | null
+    callPrompt: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["workflow"]>
@@ -1233,6 +1303,8 @@ export interface WorkflowFieldRefs {
   readonly temperature: Prisma.FieldRef<"Workflow", 'Float'>
   readonly tools: Prisma.FieldRef<"Workflow", 'Json'>
   readonly schedule: Prisma.FieldRef<"Workflow", 'String'>
+  readonly emailTemplate: Prisma.FieldRef<"Workflow", 'String'>
+  readonly callPrompt: Prisma.FieldRef<"Workflow", 'String'>
   readonly createdAt: Prisma.FieldRef<"Workflow", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Workflow", 'DateTime'>
 }

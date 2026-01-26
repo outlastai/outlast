@@ -6,19 +6,17 @@
 import type { RecordStatus } from "../staticCheck/types.js";
 import type { RecordWithHistory } from "./types.js";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Prisma client type (minimal interface).
+ * Uses permissive types to allow Prisma client duck-typing.
  */
 interface PrismaLike {
   record: {
-    findMany: (args: {
-      where: unknown;
-      include: unknown;
-      take: number;
-      orderBy: unknown;
-    }) => Promise<unknown[]>;
+    findMany: (args: any) => Promise<any[]>;
   };
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 /**
  * List records associated with a workflow that need processing.

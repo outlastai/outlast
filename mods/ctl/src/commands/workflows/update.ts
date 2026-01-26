@@ -4,10 +4,12 @@
 import * as fs from "node:fs/promises";
 import { confirm, input } from "@inquirer/prompts";
 import { Args, Flags } from "@oclif/core";
+import { workflowUpdateFileSchema } from "@outlast/common";
 import { Workflows, type UpdateWorkflowRequest } from "@outlast/sdk";
 import { parse as parseYaml } from "yaml";
 import { BaseCommand } from "../../BaseCommand.js";
 import errorHandler from "../../errorHandler.js";
+import { formatZodErrors } from "../../utils/formatZodErrors.js";
 
 export default class Update extends BaseCommand<typeof Update> {
   static override readonly description = "update an existing workflow";
@@ -62,16 +64,23 @@ export default class Update extends BaseCommand<typeof Update> {
     if (fromFile) {
       try {
         const content = await fs.readFile(fromFile, "utf-8");
-        let fileData: Omit<UpdateWorkflowRequest, "id">;
+        let rawData: unknown;
 
         if (fromFile.endsWith(".yaml") || fromFile.endsWith(".yml")) {
-          fileData = parseYaml(content) as Omit<UpdateWorkflowRequest, "id">;
+          rawData = parseYaml(content);
         } else {
-          fileData = JSON.parse(content) as Omit<UpdateWorkflowRequest, "id">;
+          rawData = JSON.parse(content);
         }
 
-        updates = { id, ...fileData };
+        // Validate with Zod schema
+        const parseResult = workflowUpdateFileSchema.safeParse(rawData);
+        if (!parseResult.success) {
+          this.error(`Invalid workflow file:\n${formatZodErrors(parseResult.error)}`);
+        }
+
+        updates = { id, ...parseResult.data };
       } catch (e) {
+        if ((e as Error).name === "ExitPromptError") throw e;
         this.error(`Failed to read file: ${(e as Error).message}`);
       }
     } else if (interactive) {

@@ -1,0 +1,45 @@
+name: Invoice Follow-up Workflow
+description: Automated follow-up for unpaid invoices
+model: gpt-4o
+temperature: 0.7
+
+systemPrompt: |
+  You are a professional accounts receivable agent.
+  Follow up on unpaid invoices politely but firmly.
+
+tools:
+  - sendEmail
+  - sendCall
+  - updateRecordStatus
+  - getRecord
+  - getRecordHistory
+
+schedule: "*/2 * * * *"  # every 2 minutes
+
+emailTemplate: |
+  Subject: Follow-up: Invoice {{record.title}}
+  
+  Dear {{contact.name}},
+  
+  This is a friendly reminder regarding invoice {{record.title}}.
+  Current status: {{record.status}}
+  {{#if record.dueAt}}Due date: {{record.dueAt}}{{/if}}
+  
+  Please let us know if you have any questions.
+  
+  Best regards,
+  {{workspace.name}}
+
+callPrompt: |
+  Call regarding invoice {{record.title}}.
+  Contact: {{contact.name}}
+  Amount due information is in the record metadata.
+  Priority: {{record.priority}}
+
+schedulerRules:
+  minDaysBetweenActions: 3
+  maxActionAttempts: 5
+  enabledStatuses:
+    - OPEN
+    - BLOCKED
+  batchSize: 25
