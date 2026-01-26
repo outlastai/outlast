@@ -5,6 +5,7 @@ import { Flags } from "@oclif/core";
 import { Records } from "@outlast/sdk";
 import { BaseCommand } from "../../BaseCommand.js";
 import errorHandler from "../../errorHandler.js";
+import { renderTable, getRecordColumns } from "../../columns/index.js";
 
 export default class List extends BaseCommand<typeof List> {
   static override readonly description = "list records";
@@ -69,17 +70,7 @@ export default class List extends BaseCommand<typeof List> {
         return;
       }
 
-      this.log(`Found ${result.length} record(s):\n`);
-
-      for (const record of result) {
-        this.log(`ID: ${record.id}`);
-        this.log(`  Title: ${record.title}`);
-        this.log(`  Status: ${record.status}`);
-        this.log(`  Type: ${record.type}`);
-        this.log(`  Priority: ${record.priority ?? "Not set"}`);
-        this.log(`  Created: ${new Date(record.createdAt).toLocaleString()}`);
-        this.log("");
-      }
+      this.log(renderTable(result, getRecordColumns()));
     } catch (e) {
       errorHandler(e, this.error.bind(this));
     }

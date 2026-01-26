@@ -5,6 +5,7 @@ import { Flags } from "@oclif/core";
 import { Contacts } from "@outlast/sdk";
 import { BaseCommand } from "../../BaseCommand.js";
 import errorHandler from "../../errorHandler.js";
+import { renderTable, getContactColumns } from "../../columns/index.js";
 
 export default class List extends BaseCommand<typeof List> {
   static override readonly description = "list contacts";
@@ -49,17 +50,7 @@ export default class List extends BaseCommand<typeof List> {
         return;
       }
 
-      this.log(`Found ${result.length} contact(s):\n`);
-
-      for (const contact of result) {
-        this.log(`ID: ${contact.id}`);
-        this.log(`  Name: ${contact.name}`);
-        this.log(`  Email: ${contact.email ?? "Not set"}`);
-        this.log(`  Phone: ${contact.phone ?? "Not set"}`);
-        this.log(`  Preferred Channel: ${contact.preferredChannel}`);
-        this.log(`  Created: ${new Date(contact.createdAt).toLocaleString()}`);
-        this.log("");
-      }
+      this.log(renderTable(result, getContactColumns()));
     } catch (e) {
       errorHandler(e, this.error.bind(this));
     }

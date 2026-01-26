@@ -5,6 +5,9 @@ node_modules/
 dist/
 **/dist/
 
+# Next.js build output
+.next/
+
 # OS files
 .DS_Store
 

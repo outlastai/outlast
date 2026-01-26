@@ -22,7 +22,8 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "echo \"No tests yet\"",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "lint:columns": "npx tsx src/columns/lint.ts"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.1.0",

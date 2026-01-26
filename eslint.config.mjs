@@ -9,7 +9,14 @@ import headers from "eslint-plugin-headers";
 
 export default tseslint.config(
   {
-    ignores: ["**/dist/**", "**/node_modules/**", "**/*.d.ts", "**/coverage/**", "**/generated/**"]
+    ignores: [
+      "**/dist/**",
+      "**/node_modules/**",
+      "**/*.d.ts",
+      "**/coverage/**",
+      "**/generated/**",
+      "**/.next/**"
+    ]
   },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,

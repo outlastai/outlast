@@ -5,6 +5,7 @@ import { Flags } from "@oclif/core";
 import { Workflows } from "@outlast/sdk";
 import { BaseCommand } from "../../BaseCommand.js";
 import errorHandler from "../../errorHandler.js";
+import { renderTable, getWorkflowColumns } from "../../columns/index.js";
 
 export default class List extends BaseCommand<typeof List> {
   static override readonly description = "list workflows";
@@ -49,17 +50,7 @@ export default class List extends BaseCommand<typeof List> {
         return;
       }
 
-      this.log(`Found ${result.length} workflow(s):\n`);
-
-      for (const workflow of result) {
-        this.log(`ID: ${workflow.id}`);
-        this.log(`  Name: ${workflow.name}`);
-        if (workflow.description) this.log(`  Description: ${workflow.description}`);
-        if (workflow.model) this.log(`  Model: ${workflow.model}`);
-        if (workflow.schedule) this.log(`  Schedule: ${workflow.schedule}`);
-        this.log(`  Created: ${new Date(workflow.createdAt).toLocaleString()}`);
-        this.log("");
-      }
+      this.log(renderTable(result, getWorkflowColumns()));
     } catch (e) {
       errorHandler(e, this.error.bind(this));
     }
