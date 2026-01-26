@@ -60,6 +60,11 @@ export type Contact = Prisma.ContactModel
  */
 export type Workflow = Prisma.WorkflowModel
 /**
+ * Model WorkflowSchedulerRules
+ * 
+ */
+export type WorkflowSchedulerRules = Prisma.WorkflowSchedulerRulesModel
+/**
  * Model RecordWorkflow
  * 
  */

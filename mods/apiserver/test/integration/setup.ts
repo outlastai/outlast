@@ -155,7 +155,6 @@ export function createMockDbClient() {
           systemPrompt: args.data.systemPrompt ?? null,
           temperature: args.data.temperature ?? null,
           tools: args.data.tools ?? null,
-          staticRules: args.data.staticRules ?? null,
           schedule: args.data.schedule ?? null,
           createdAt: now,
           updatedAt: now

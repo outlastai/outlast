@@ -14,10 +14,13 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@outlast/common": "^1.0.0"
+    "@outlast/common": "^1.0.0",
+    "openai": "^4.77.0",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
     "@types/node": "^25.0.10",
+    "@types/node-cron": "^3.0.11",
     "typescript": "^5.9.3"
   }
 }

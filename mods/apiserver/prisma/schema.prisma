@@ -145,16 +145,44 @@ model Workflow {
   systemPrompt  String?  @map("system_prompt") @db.Text
   temperature   Float?   @map("temperature")
   tools         Json?    @map("tools")
-  staticRules   Json?    @map("static_rules")
   schedule      String?  @map("schedule")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   // Relations
-  recordWorkflows RecordWorkflow[]
+  recordWorkflows  RecordWorkflow[]
+  schedulerRules   WorkflowSchedulerRules?
 
   @@index([workspaceId])
   @@map("workflows")
+}
+
+model WorkflowSchedulerRules {
+  id                       String   @id @default(uuid())
+  workflowId               String   @unique @map("workflow_id")
+
+  // Timing rules
+  minDaysBetweenActions    Int      @default(3) @map("min_days_between_actions")
+  maxActionAttempts        Int      @default(5) @map("max_action_attempts")
+  recordTooRecentDays      Int      @default(1) @map("record_too_recent_days")
+  recentUpdateCooldownDays Int      @default(1) @map("recent_update_cooldown_days")
+  escalationThreshold      Int      @default(3) @map("escalation_threshold")
+
+  // Priority overrides
+  highPriorityMinDays      Int      @default(1) @map("high_priority_min_days")
+  lowPriorityMultiplier    Float    @default(2) @map("low_priority_multiplier")
+
+  // Filters
+  enabledStatuses          Json     @default("[\"OPEN\"]") @map("enabled_statuses")
+  batchSize                Int      @default(50) @map("batch_size")
+
+  createdAt                DateTime @default(now()) @map("created_at")
+  updatedAt                DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  workflow                 Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@map("workflow_scheduler_rules")
 }
 
 model RecordWorkflow {

@@ -55,6 +55,7 @@ export const ModelName = {
   RecordHistory: 'RecordHistory',
   Contact: 'Contact',
   Workflow: 'Workflow',
+  WorkflowSchedulerRules: 'WorkflowSchedulerRules',
   RecordWorkflow: 'RecordWorkflow',
   Item: 'Item'
 } as const
@@ -134,13 +135,31 @@ export const WorkflowScalarFieldEnum = {
   systemPrompt: 'systemPrompt',
   temperature: 'temperature',
   tools: 'tools',
-  staticRules: 'staticRules',
   schedule: 'schedule',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type WorkflowScalarFieldEnum = (typeof WorkflowScalarFieldEnum)[keyof typeof WorkflowScalarFieldEnum]
+
+
+export const WorkflowSchedulerRulesScalarFieldEnum = {
+  id: 'id',
+  workflowId: 'workflowId',
+  minDaysBetweenActions: 'minDaysBetweenActions',
+  maxActionAttempts: 'maxActionAttempts',
+  recordTooRecentDays: 'recordTooRecentDays',
+  recentUpdateCooldownDays: 'recentUpdateCooldownDays',
+  escalationThreshold: 'escalationThreshold',
+  highPriorityMinDays: 'highPriorityMinDays',
+  lowPriorityMultiplier: 'lowPriorityMultiplier',
+  enabledStatuses: 'enabledStatuses',
+  batchSize: 'batchSize',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkflowSchedulerRulesScalarFieldEnum = (typeof WorkflowSchedulerRulesScalarFieldEnum)[keyof typeof WorkflowSchedulerRulesScalarFieldEnum]
 
 
 export const RecordWorkflowScalarFieldEnum = {
@@ -180,6 +199,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

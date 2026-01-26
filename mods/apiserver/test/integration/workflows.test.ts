@@ -31,7 +31,6 @@ describe("Workflows API", () => {
           systemPrompt: "You are a helpful assistant",
           temperature: 0.7,
           tools: [{ type: "function", name: "search" }],
-          staticRules: { maxRetries: 3 },
           schedule: "0 * * * *"
         });
 

@@ -388,6 +388,7 @@ export const ModelName = {
   RecordHistory: 'RecordHistory',
   Contact: 'Contact',
   Workflow: 'Workflow',
+  WorkflowSchedulerRules: 'WorkflowSchedulerRules',
   RecordWorkflow: 'RecordWorkflow',
   Item: 'Item'
 } as const
@@ -405,7 +406,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "record" | "recordHistory" | "contact" | "workflow" | "recordWorkflow" | "item"
+    modelProps: "record" | "recordHistory" | "contact" | "workflow" | "workflowSchedulerRules" | "recordWorkflow" | "item"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -705,6 +706,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WorkflowSchedulerRules: {
+      payload: Prisma.$WorkflowSchedulerRulesPayload<ExtArgs>
+      fields: Prisma.WorkflowSchedulerRulesFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WorkflowSchedulerRulesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WorkflowSchedulerRulesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload>
+        }
+        findFirst: {
+          args: Prisma.WorkflowSchedulerRulesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WorkflowSchedulerRulesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload>
+        }
+        findMany: {
+          args: Prisma.WorkflowSchedulerRulesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload>[]
+        }
+        create: {
+          args: Prisma.WorkflowSchedulerRulesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload>
+        }
+        createMany: {
+          args: Prisma.WorkflowSchedulerRulesCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WorkflowSchedulerRulesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload>[]
+        }
+        delete: {
+          args: Prisma.WorkflowSchedulerRulesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload>
+        }
+        update: {
+          args: Prisma.WorkflowSchedulerRulesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload>
+        }
+        deleteMany: {
+          args: Prisma.WorkflowSchedulerRulesDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WorkflowSchedulerRulesUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WorkflowSchedulerRulesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload>[]
+        }
+        upsert: {
+          args: Prisma.WorkflowSchedulerRulesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowSchedulerRulesPayload>
+        }
+        aggregate: {
+          args: Prisma.WorkflowSchedulerRulesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWorkflowSchedulerRules>
+        }
+        groupBy: {
+          args: Prisma.WorkflowSchedulerRulesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkflowSchedulerRulesGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WorkflowSchedulerRulesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkflowSchedulerRulesCountAggregateOutputType> | number
+        }
+      }
+    }
     RecordWorkflow: {
       payload: Prisma.$RecordWorkflowPayload<ExtArgs>
       fields: Prisma.RecordWorkflowFieldRefs
@@ -951,13 +1026,31 @@ export const WorkflowScalarFieldEnum = {
   systemPrompt: 'systemPrompt',
   temperature: 'temperature',
   tools: 'tools',
-  staticRules: 'staticRules',
   schedule: 'schedule',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type WorkflowScalarFieldEnum = (typeof WorkflowScalarFieldEnum)[keyof typeof WorkflowScalarFieldEnum]
+
+
+export const WorkflowSchedulerRulesScalarFieldEnum = {
+  id: 'id',
+  workflowId: 'workflowId',
+  minDaysBetweenActions: 'minDaysBetweenActions',
+  maxActionAttempts: 'maxActionAttempts',
+  recordTooRecentDays: 'recordTooRecentDays',
+  recentUpdateCooldownDays: 'recentUpdateCooldownDays',
+  escalationThreshold: 'escalationThreshold',
+  highPriorityMinDays: 'highPriorityMinDays',
+  lowPriorityMultiplier: 'lowPriorityMultiplier',
+  enabledStatuses: 'enabledStatuses',
+  batchSize: 'batchSize',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type WorkflowSchedulerRulesScalarFieldEnum = (typeof WorkflowSchedulerRulesScalarFieldEnum)[keyof typeof WorkflowSchedulerRulesScalarFieldEnum]
 
 
 export const RecordWorkflowScalarFieldEnum = {
@@ -997,6 +1090,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -1171,20 +1271,6 @@ export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMode
 
 
 /**
- * Reference to a field of type 'ItemStatus'
- */
-export type EnumItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemStatus'>
-    
-
-
-/**
- * Reference to a field of type 'ItemStatus[]'
- */
-export type ListEnumItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemStatus[]'>
-    
-
-
-/**
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -1195,6 +1281,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ItemStatus'
+ */
+export type EnumItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ItemStatus[]'
+ */
+export type ListEnumItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemStatus[]'>
     
 
 /**
@@ -1296,6 +1396,7 @@ export type GlobalOmitConfig = {
   recordHistory?: Prisma.RecordHistoryOmit
   contact?: Prisma.ContactOmit
   workflow?: Prisma.WorkflowOmit
+  workflowSchedulerRules?: Prisma.WorkflowSchedulerRulesOmit
   recordWorkflow?: Prisma.RecordWorkflowOmit
   item?: Prisma.ItemOmit
 }

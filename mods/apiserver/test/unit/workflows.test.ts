@@ -44,7 +44,6 @@ describe("Workflows API Functions", () => {
         systemPrompt: "You are a helpful assistant",
         temperature: 0.7,
         tools: [{ type: "function", name: "search" }],
-        staticRules: { maxRetries: 3 },
         schedule: "0 * * * *"
       });
 
@@ -54,7 +53,6 @@ describe("Workflows API Functions", () => {
       expect(result.systemPrompt).to.equal("You are a helpful assistant");
       expect(result.temperature).to.equal(0.7);
       expect(result.tools).to.deep.equal([{ type: "function", name: "search" }]);
-      expect(result.staticRules).to.deep.equal({ maxRetries: 3 });
       expect(result.schedule).to.equal("0 * * * *");
     });
 
