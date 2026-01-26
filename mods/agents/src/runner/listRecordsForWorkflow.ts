@@ -5,6 +5,7 @@
  */
 import type { RecordStatus } from "../staticCheck/types.js";
 import type { RecordWithHistory } from "./types.js";
+import { logger } from "../logger.js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
@@ -28,6 +29,12 @@ export async function listRecordsForWorkflow(
   enabledStatuses: RecordStatus[],
   batchSize: number
 ): Promise<RecordWithHistory[]> {
+  logger.verbose("listing records for workflow", {
+    workflowId,
+    enabledStatuses,
+    batchSize
+  });
+
   const records = await prisma.record.findMany({
     where: {
       status: { in: enabledStatuses },
@@ -44,6 +51,12 @@ export async function listRecordsForWorkflow(
     },
     take: batchSize,
     orderBy: { updatedAt: "asc" }
+  });
+
+  logger.verbose("records found for workflow", {
+    workflowId,
+    count: records.length,
+    recordIds: records.map((r: { id: string }) => r.id)
   });
 
   return records as unknown as RecordWithHistory[];

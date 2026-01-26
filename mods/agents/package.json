@@ -14,9 +14,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@fonoster/logger": "^0.9.56",
     "@outlast/common": "^1.0.0",
-    "openai": "^4.77.0",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3",
+    "openai": "^4.77.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.10",

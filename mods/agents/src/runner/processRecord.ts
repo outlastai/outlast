@@ -8,6 +8,7 @@ import type { InvokeLLMFn } from "../llm/types.js";
 import { staticPreCheck } from "../staticCheck/staticPreCheck.js";
 import { buildAnalysisContext } from "../staticCheck/buildAnalysisContext.js";
 import type { StaticRules } from "../staticCheck/types.js";
+import { logger } from "../logger.js";
 
 /**
  * Default rules if workflow has none.
@@ -35,6 +36,14 @@ export async function processRecord(
 ): Promise<RecordRunResult> {
   const rules = workflow.schedulerRules || DEFAULT_RULES;
 
+  logger.verbose("processing record", {
+    recordId: record.id,
+    status: record.status,
+    priority: record.priority,
+    historyCount: record.history.length,
+    hasContact: !!record.contact
+  });
+
   // Build analysis context
   const context = buildAnalysisContext(
     {
@@ -47,8 +56,22 @@ export async function processRecord(
     record.history.map((h) => ({ channel: h.channel, createdAt: h.createdAt }))
   );
 
+  logger.verbose("analysis context built", {
+    recordId: record.id,
+    actionCount: context.actionCount,
+    daysSinceLastAction: context.daysSinceLastAction,
+    daysSinceLastUpdate: context.daysSinceLastUpdate,
+    daysSinceCreation: context.daysSinceCreation
+  });
+
   // Static pre-check
   const preCheck = staticPreCheck(context, rules);
+
+  logger.verbose("static pre-check result", {
+    recordId: record.id,
+    shouldProceed: preCheck.shouldProceed,
+    reason: preCheck.reason
+  });
 
   if (!preCheck.shouldProceed) {
     return {
@@ -61,14 +84,28 @@ export async function processRecord(
   // Build context for AI
   const recordSummary = buildRecordSummary(record);
 
+  logger.verbose("invoking AI for record", { recordId: record.id });
+
   try {
     // Invoke AI
     const response = await invokeLLM([], recordSummary);
+
+    logger.verbose("AI response received", {
+      recordId: record.id,
+      responseLength: response.length,
+      responsePreview: response.substring(0, 200)
+    });
 
     // Check if any action was taken (tools would have been called)
     // The tools themselves create RecordHistory entries
     const actionTaken =
       response.toLowerCase().includes("sent") || response.toLowerCase().includes("call");
+
+    logger.verbose("record processing complete", {
+      recordId: record.id,
+      outcome: actionTaken ? "action_taken" : "skipped_ai",
+      actionTaken
+    });
 
     return {
       recordId: record.id,
@@ -76,6 +113,11 @@ export async function processRecord(
       reason: actionTaken ? undefined : "AI decided no action needed"
     };
   } catch (error) {
+    logger.verbose("error processing record", {
+      recordId: record.id,
+      error: error instanceof Error ? error.message : String(error)
+    });
+
     return {
       recordId: record.id,
       outcome: "error",
