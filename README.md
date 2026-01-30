@@ -37,7 +37,7 @@ Copy the generated key to `OUTLAST_IDENTITY_CLOAK_ENCRYPTION_KEY` in your `.env`
 Now, build the identity module and generate RSA keys for signing and verifying authentication tokens:
 
 ```bash
-npm run build -w @outlast/identity
+npm run build
 npm run db:generate-keys -w @outlast/identity
 ```
 
