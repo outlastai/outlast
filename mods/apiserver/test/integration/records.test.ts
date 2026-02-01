@@ -9,13 +9,20 @@ import {
   createMockRecordHistory
 } from "./setup.js";
 
+const validCreateRecordInput = {
+  title: "Test Record",
+  type: "GENERIC" as const,
+  sourceSystem: "MANUAL" as const,
+  sourceRecordId: "test-src-1"
+};
+
 describe("Records API", () => {
   describe("createRecord", () => {
     describe("when authenticated", () => {
       it("should create a record with valid input", async () => {
         const { caller } = createAuthenticatedCaller();
 
-        const result = await caller.createRecord({ title: "Test Record" });
+        const result = await caller.createRecord(validCreateRecordInput);
 
         expect(result).to.have.property("id");
         expect(result.title).to.equal("Test Record");
@@ -29,6 +36,7 @@ describe("Records API", () => {
         const { caller } = createAuthenticatedCaller();
 
         const result = await caller.createRecord({
+          ...validCreateRecordInput,
           title: "Test Record",
           status: "BLOCKED",
           type: "INVOICE",
@@ -44,7 +52,7 @@ describe("Records API", () => {
         const { caller } = createAuthenticatedCaller();
 
         try {
-          await caller.createRecord({ title: "" });
+          await caller.createRecord({ ...validCreateRecordInput, title: "" });
           expect.fail("Expected validation error");
         } catch (error) {
           expect(error).to.be.instanceOf(TRPCError);
@@ -57,7 +65,7 @@ describe("Records API", () => {
         const { caller } = createUnauthenticatedCaller();
 
         try {
-          await caller.createRecord({ title: "Test Record" });
+          await caller.createRecord(validCreateRecordInput);
           expect.fail("Expected UNAUTHORIZED error");
         } catch (error) {
           expect(error).to.be.instanceOf(TRPCError);
@@ -70,7 +78,7 @@ describe("Records API", () => {
   describe("updateRecord", () => {
     it("should update a record when authenticated", async () => {
       const { caller } = createAuthenticatedCaller();
-      const created = await caller.createRecord({ title: "Original" });
+      const created = await caller.createRecord({ ...validCreateRecordInput, title: "Original" });
 
       const result = await caller.updateRecord({
         id: created.id,
@@ -85,7 +93,7 @@ describe("Records API", () => {
 
     it("should reject when not authenticated", async () => {
       const { caller: authCaller } = createAuthenticatedCaller();
-      const created = await authCaller.createRecord({ title: "Test" });
+      const created = await authCaller.createRecord(validCreateRecordInput);
 
       const { caller: unauthCaller } = createUnauthenticatedCaller();
       try {
@@ -100,7 +108,7 @@ describe("Records API", () => {
   describe("deleteRecord", () => {
     it("should delete a record when authenticated", async () => {
       const { caller, db } = createAuthenticatedCaller();
-      const created = await caller.createRecord({ title: "To Delete" });
+      const created = await caller.createRecord({ ...validCreateRecordInput, title: "To Delete" });
 
       const result = await caller.deleteRecord({ id: created.id });
 
@@ -113,7 +121,7 @@ describe("Records API", () => {
 
     it("should reject when not authenticated", async () => {
       const { caller: authCaller } = createAuthenticatedCaller();
-      const created = await authCaller.createRecord({ title: "Test" });
+      const created = await authCaller.createRecord(validCreateRecordInput);
 
       const { caller: unauthCaller } = createUnauthenticatedCaller();
       try {
@@ -128,8 +136,16 @@ describe("Records API", () => {
   describe("listRecords", () => {
     it("should list records when authenticated", async () => {
       const { caller } = createAuthenticatedCaller();
-      await caller.createRecord({ title: "Record 1" });
-      await caller.createRecord({ title: "Record 2" });
+      await caller.createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-1",
+        title: "Record 1"
+      });
+      await caller.createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-2",
+        title: "Record 2"
+      });
 
       const result = await caller.listRecords({});
 
@@ -138,9 +154,21 @@ describe("Records API", () => {
 
     it("should support pagination", async () => {
       const { caller } = createAuthenticatedCaller();
-      await caller.createRecord({ title: "Record 1" });
-      await caller.createRecord({ title: "Record 2" });
-      await caller.createRecord({ title: "Record 3" });
+      await caller.createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-1",
+        title: "Record 1"
+      });
+      await caller.createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-2",
+        title: "Record 2"
+      });
+      await caller.createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-3",
+        title: "Record 3"
+      });
 
       const result = await caller.listRecords({ skip: 1, take: 1 });
 
@@ -149,8 +177,18 @@ describe("Records API", () => {
 
     it("should filter by status", async () => {
       const { caller } = createAuthenticatedCaller();
-      await caller.createRecord({ title: "Open", status: "OPEN" });
-      await caller.createRecord({ title: "Done", status: "DONE" });
+      await caller.createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-open",
+        title: "Open",
+        status: "OPEN"
+      });
+      await caller.createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-done",
+        title: "Done",
+        status: "DONE"
+      });
 
       const result = await caller.listRecords({ status: "OPEN" });
 
@@ -173,7 +211,7 @@ describe("Records API", () => {
   describe("getRecordHistory", () => {
     it("should get record history when authenticated", async () => {
       const { caller, db } = createAuthenticatedCaller();
-      const created = await caller.createRecord({ title: "Test" });
+      const created = await caller.createRecord(validCreateRecordInput);
 
       // Add mock history
       db._addRecordHistory(created.id, createMockRecordHistory(created.id, { status: "OPEN" }));
@@ -186,7 +224,7 @@ describe("Records API", () => {
 
     it("should return empty for record with no history", async () => {
       const { caller } = createAuthenticatedCaller();
-      const created = await caller.createRecord({ title: "Test" });
+      const created = await caller.createRecord(validCreateRecordInput);
 
       const result = await caller.getRecordHistory({ recordId: created.id });
 
@@ -195,7 +233,7 @@ describe("Records API", () => {
 
     it("should reject when not authenticated", async () => {
       const { caller: authCaller } = createAuthenticatedCaller();
-      const created = await authCaller.createRecord({ title: "Test" });
+      const created = await authCaller.createRecord(validCreateRecordInput);
 
       const { caller: unauthCaller } = createUnauthenticatedCaller();
       try {

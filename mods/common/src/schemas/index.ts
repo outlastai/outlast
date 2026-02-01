@@ -9,6 +9,7 @@ export {
   deleteRecordSchema,
   listRecordsSchema,
   getRecordHistorySchema,
+  recordFileSchema,
   // Record types
   type CreateRecordInput,
   type GetRecordInput,
@@ -16,6 +17,7 @@ export {
   type DeleteRecordInput,
   type ListRecordsInput,
   type GetRecordHistoryInput,
+  type RecordFileInput,
   // Record enums
   RecordType,
   RecordStatus,

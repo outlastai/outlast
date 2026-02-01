@@ -79,6 +79,16 @@ export function createMockDbClient() {
         const take = args?.take || allRecords.length;
         return allRecords.slice(skip, skip + take);
       },
+      findFirst: async (args: {
+        where: { workspaceId: string; sourceRecordId: string };
+      }): Promise<RecordEntity | null> => {
+        const match = Array.from(records.values()).find(
+          (r) =>
+            r.workspaceId === args.where.workspaceId &&
+            r.sourceRecordId === args.where.sourceRecordId
+        );
+        return match ?? null;
+      },
       findUnique: async (args: { where: { id: string } }): Promise<RecordEntity | null> => {
         return records.get(args.where.id) || null;
       },
@@ -98,6 +108,15 @@ export function createMockDbClient() {
         records.delete(args.where.id);
         recordHistoryStore.delete(args.where.id);
         return record;
+      }
+    },
+
+    recordWorkflow: {
+      createMany: async (args: {
+        data: Array<{ recordId: string; workflowId: string }>;
+        skipDuplicates?: boolean;
+      }): Promise<{ count: number }> => {
+        return { count: args.data.length };
       }
     },
 

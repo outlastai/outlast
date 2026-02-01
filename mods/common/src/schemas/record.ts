@@ -66,32 +66,54 @@ export const Channel = {
   WHATSAPP: "WHATSAPP"
 } as const;
 
+const recordTypeEnum = z.enum([
+  "GENERIC",
+  "PURCHASE_ORDER",
+  "INVENTORY_ITEM",
+  "INVOICE",
+  "SHIPMENT",
+  "TICKET",
+  "RETURN"
+]);
+
+const sourceSystemEnum = z.enum(["CSV", "ODOO", "SALESFORCE", "SAP", "EMAIL", "MANUAL"]);
+
 /**
  * Schema for creating a new record.
  */
-export const createRecordSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  type: z
-    .enum([
-      "GENERIC",
-      "PURCHASE_ORDER",
-      "INVENTORY_ITEM",
-      "INVOICE",
-      "SHIPMENT",
-      "TICKET",
-      "RETURN"
-    ])
-    .optional(),
-  status: z.enum(["OPEN", "DONE", "BLOCKED", "ARCHIVED"]).optional(),
-  risk: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
-  priority: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
-  contactId: z.uuid().nullable().optional(),
-  dueAt: z.coerce.date().nullable().optional(),
-  sourceSystem: z.enum(["CSV", "ODOO", "SALESFORCE", "SAP", "EMAIL", "MANUAL"]).optional(),
-  sourceRecordId: z.string().nullable().optional(),
-  metadata: z.record(z.string(), z.unknown()).nullable().optional(),
-  rawData: z.record(z.string(), z.unknown()).nullable().optional()
-});
+export const createRecordSchema = z
+  .object({
+    // Required fields
+    title: z.string().min(1, "Title is required"),
+    type: recordTypeEnum,
+    sourceSystem: sourceSystemEnum,
+    sourceRecordId: z.string().min(1, "Source record ID is required"),
+
+    // Fields with defaults
+    status: z.enum(["OPEN", "DONE", "BLOCKED", "ARCHIVED"]).default("OPEN"),
+    priority: z.enum(["LOW", "MEDIUM", "HIGH"]).default("LOW"),
+
+    // Optional fields
+    risk: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
+    contactId: z.uuid().nullable().optional(),
+    dueAt: z.coerce.date().nullable().optional(),
+    metadata: z.record(z.string(), z.unknown()).nullable().optional(),
+    rawData: z.record(z.string(), z.unknown()).nullable().optional(),
+
+    // Workflow associations
+    workflowIds: z.array(z.uuid()).optional(),
+
+    // Upsert options
+    allowOverwrite: z.boolean().optional().default(false),
+    overwriteFields: z.array(z.string()).optional()
+  })
+  .refine(
+    (data) => !data.allowOverwrite || (data.overwriteFields && data.overwriteFields.length > 0),
+    {
+      message: "overwriteFields is required when allowOverwrite is true",
+      path: ["overwriteFields"]
+    }
+  );
 
 /**
  * Input type for creating a record.
@@ -190,3 +212,27 @@ export const getRecordHistorySchema = z.object({
  * Input type for getting record history.
  */
 export type GetRecordHistoryInput = z.infer<typeof getRecordHistorySchema>;
+
+/**
+ * Schema for a record file (JSON or YAML).
+ * Used for `ol records:create --from-file`.
+ */
+export const recordFileSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  type: recordTypeEnum,
+  sourceSystem: sourceSystemEnum,
+  sourceRecordId: z.string().min(1, "Source record ID is required"),
+  status: z.enum(["OPEN", "DONE", "BLOCKED", "ARCHIVED"]).optional(),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
+  risk: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
+  contactId: z.uuid().nullable().optional(),
+  dueAt: z.coerce.date().nullable().optional(),
+  metadata: z.record(z.string(), z.unknown()).nullable().optional(),
+  rawData: z.record(z.string(), z.unknown()).nullable().optional(),
+  workflowIds: z.array(z.uuid()).optional()
+});
+
+/**
+ * Input type for a record file.
+ */
+export type RecordFileInput = z.infer<typeof recordFileSchema>;

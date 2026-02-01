@@ -141,17 +141,25 @@ export type RecordEntity = {
 export type Record = RecordEntity;
 
 export type CreateRecordRequest = {
+  // Required fields
   title: string;
-  type?: RecordType;
+  type: RecordType;
+  sourceSystem: SourceSystem;
+  sourceRecordId: string;
+  // Fields with defaults (optional in request)
   status?: RecordStatus;
-  risk?: RiskLevel;
   priority?: PriorityLevel;
+  // Optional fields
+  risk?: RiskLevel;
   contactId?: string | null;
   dueAt?: string | Date | null;
-  sourceSystem?: SourceSystem;
-  sourceRecordId?: string | null;
   metadata?: JsonObject | null;
   rawData?: JsonObject | null;
+  // Workflow associations
+  workflowIds?: string[];
+  // Upsert options
+  allowOverwrite?: boolean;
+  overwriteFields?: string[];
 };
 
 export type UpdateRecordRequest = {

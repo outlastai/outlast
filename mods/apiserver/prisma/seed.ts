@@ -110,6 +110,7 @@ async function main() {
       priority: "HIGH",
       contactId: CONTACT_1_ID,
       sourceSystem: "MANUAL",
+      sourceRecordId: "seed-record-1001",
       metadata: {
         invoiceNumber: "1001",
         amount: 5000,
@@ -131,6 +132,7 @@ async function main() {
       priority: "MEDIUM",
       contactId: CONTACT_2_ID,
       sourceSystem: "MANUAL",
+      sourceRecordId: "seed-record-1002",
       metadata: {
         invoiceNumber: "1002",
         amount: 2500,

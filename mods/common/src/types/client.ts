@@ -66,14 +66,14 @@ export type Record = RecordEntity;
 export interface RecordCreateInput {
   workspaceId: string;
   title: string;
-  type?: RecordTypeValue;
+  type: RecordTypeValue;
+  sourceSystem: SourceSystemValue;
+  sourceRecordId: string;
   status?: RecordStatusValue;
-  risk?: RiskLevelValue | null;
   priority?: PriorityLevelValue | null;
+  risk?: RiskLevelValue | null;
   contactId?: string | null;
   dueAt?: Date | null;
-  sourceSystem?: SourceSystemValue;
-  sourceRecordId?: string | null;
   metadata?: JsonObject | null;
   rawData?: JsonObject | null;
 }
@@ -90,6 +90,7 @@ export interface RecordUpdateInput {
   contactId?: string | null;
   dueAt?: Date | null;
   metadata?: JsonObject | null;
+  rawData?: JsonObject | null;
 }
 
 // =============================================================================
@@ -210,9 +211,18 @@ export interface DbClient {
       take?: number;
       where?: { workspaceId?: string; status?: RecordStatusValue; type?: RecordTypeValue };
     }) => Promise<RecordEntity[]>;
+    findFirst: (args: {
+      where: { workspaceId: string; sourceRecordId: string };
+    }) => Promise<RecordEntity | null>;
     findUnique: (args: { where: { id: string } }) => Promise<RecordEntity | null>;
     update: (args: { where: { id: string }; data: RecordUpdateInput }) => Promise<RecordEntity>;
     delete: (args: { where: { id: string } }) => Promise<RecordEntity>;
+  };
+  recordWorkflow: {
+    createMany: (args: {
+      data: Array<{ recordId: string; workflowId: string }>;
+      skipDuplicates?: boolean;
+    }) => Promise<{ count: number }>;
   };
   contact: {
     create: (args: { data: ContactCreateInput }) => Promise<Contact>;

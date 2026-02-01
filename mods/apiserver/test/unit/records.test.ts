@@ -18,6 +18,13 @@ import {
   type MockDbClient
 } from "../integration/setup.js";
 
+const validCreateRecordInput = {
+  title: "Test Record",
+  type: "GENERIC" as const,
+  sourceSystem: "MANUAL" as const,
+  sourceRecordId: "test-src-1"
+};
+
 describe("Records API Functions", () => {
   let mockDb: MockDbClient;
   const workspaceId = "test-workspace";
@@ -29,7 +36,7 @@ describe("Records API Functions", () => {
   describe("createCreateRecord", () => {
     it("should create a record with valid input", async () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
-      const result = await createRecord({ title: "Test Record" });
+      const result = await createRecord(validCreateRecordInput);
 
       expect(result).to.have.property("id");
       expect(result.title).to.equal("Test Record");
@@ -37,11 +44,13 @@ describe("Records API Functions", () => {
       expect(result.status).to.equal("OPEN");
       expect(result.type).to.equal("GENERIC");
       expect(result.sourceSystem).to.equal("MANUAL");
+      expect(result.sourceRecordId).to.equal("test-src-1");
     });
 
     it("should create a record with optional fields", async () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
       const result = await createRecord({
+        ...validCreateRecordInput,
         title: "Test Record",
         status: "BLOCKED",
         type: "INVOICE",
@@ -57,7 +66,7 @@ describe("Records API Functions", () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
 
       try {
-        await createRecord({ title: "" });
+        await createRecord({ ...validCreateRecordInput, title: "" });
         expect.fail("Expected validation error");
       } catch (error) {
         expect(error).to.have.property("name", "ValidationError");
@@ -69,7 +78,7 @@ describe("Records API Functions", () => {
     it("should update a record by ID", async () => {
       // First create a record
       const createRecord = createCreateRecord(mockDb, workspaceId);
-      const created = await createRecord({ title: "Original Title" });
+      const created = await createRecord({ ...validCreateRecordInput, title: "Original Title" });
 
       const updateRecord = createUpdateRecord(mockDb);
       const result = await updateRecord({
@@ -98,7 +107,7 @@ describe("Records API Functions", () => {
   describe("createDeleteRecord", () => {
     it("should delete a record by ID", async () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
-      const created = await createRecord({ title: "To Delete" });
+      const created = await createRecord({ ...validCreateRecordInput, title: "To Delete" });
 
       const deleteRecord = createDeleteRecord(mockDb);
       const result = await deleteRecord({ id: created.id });
@@ -125,9 +134,25 @@ describe("Records API Functions", () => {
   describe("createListRecords", () => {
     beforeEach(async () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
-      await createRecord({ title: "Record 1", status: "OPEN" });
-      await createRecord({ title: "Record 2", status: "DONE" });
-      await createRecord({ title: "Record 3", status: "OPEN", type: "INVOICE" });
+      await createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-1",
+        title: "Record 1",
+        status: "OPEN"
+      });
+      await createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-2",
+        title: "Record 2",
+        status: "DONE"
+      });
+      await createRecord({
+        ...validCreateRecordInput,
+        sourceRecordId: "src-3",
+        title: "Record 3",
+        status: "OPEN",
+        type: "INVOICE"
+      });
     });
 
     it("should list all records", async () => {
@@ -164,7 +189,7 @@ describe("Records API Functions", () => {
   describe("createGetRecordHistory", () => {
     it("should get history for a record", async () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
-      const created = await createRecord({ title: "Test Record" });
+      const created = await createRecord(validCreateRecordInput);
 
       // Add some mock history
       mockDb._addRecordHistory(created.id, createMockRecordHistory(created.id, { status: "OPEN" }));
@@ -178,7 +203,7 @@ describe("Records API Functions", () => {
 
     it("should return empty array for record with no history", async () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
-      const created = await createRecord({ title: "Test Record" });
+      const created = await createRecord(validCreateRecordInput);
 
       const getHistory = createGetRecordHistory(mockDb);
       const result = await getHistory({ recordId: created.id });
@@ -188,7 +213,7 @@ describe("Records API Functions", () => {
 
     it("should support pagination for history", async () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
-      const created = await createRecord({ title: "Test Record" });
+      const created = await createRecord(validCreateRecordInput);
 
       // Add multiple history entries
       for (let i = 0; i < 5; i++) {

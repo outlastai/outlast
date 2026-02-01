@@ -1,12 +1,18 @@
+# Example workflow for ol workflows:create --from-file
 name: Invoice Follow-up Workflow
 description: Automated follow-up for unpaid invoices
+
+# Model configuration (optional, defaults shown)
 model: gpt-4o
 temperature: 0.7
+timezone: "America/New_York"
 
+# System prompt defines the agent's personality and instructions
 systemPrompt: |
   You are a professional accounts receivable agent.
   Follow up on unpaid invoices politely but firmly.
 
+# Available tools: sendEmail, sendCall, updateRecordStatus, getRecord, getRecordHistory
 tools:
   - sendEmail
   - sendCall
@@ -14,30 +20,37 @@ tools:
   - getRecord
   - getRecordHistory
 
-schedule: "*/2 * * * *"  # every 2 minutes
+# Cron schedule for when the workflow runs (standard cron format)
+# Examples: "0 9 * * *" = daily at 9am, "*/2 * * * *" = every 2 minutes
+schedule: "*/2 * * * *"
 
+# Email template using Handlebars syntax
+# Available variables: {{contact.*}}, {{record.*}}, {{workspace.*}}
 emailTemplate: |
   Dear {{contact.name}},
-  
+
   This is a friendly reminder regarding invoice {{record.title}}.
   Current status: {{record.status}}
   {{#if record.dueAt}}Due date: {{record.dueAt}}{{/if}}
-  
+
   Please let us know if you have any questions.
-  
+
   Best regards,
   {{workspace.name}}
 
+# Call prompt template (same Handlebars variables available)
 callPrompt: |
   Call regarding invoice {{record.title}}.
   Contact: {{contact.name}}
   Amount due information is in the record metadata.
   Priority: {{record.priority}}
 
+# Scheduler rules control workflow execution behavior
 schedulerRules:
-  minDaysBetweenActions: 3
-  maxActionAttempts: 5
-  enabledStatuses:
+  minDaysBetweenActions: 3 # Minimum days between actions on same record
+  maxActionAttempts: 5 # Maximum total attempts per record
+  enabledOnWeekends: true # Whether to run on weekends
+  enabledStatuses: # Only process records with these statuses
     - OPEN
     - BLOCKED
-  batchSize: 25
+  batchSize: 25 # Max records to process per run

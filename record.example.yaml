@@ -1,0 +1,27 @@
+# Example record for ol records:create --from-file
+
+title: Invoice INV-2026-001
+type: INVOICE
+sourceSystem: SALESFORCE
+sourceRecordId: SF-OPP-12345
+
+# Optional fields (status defaults to OPEN, priority defaults to LOW)
+status: OPEN
+priority: HIGH
+
+dueAt: 2026-02-15
+
+# Link to a contact (replace with a real contact UUID from ol contacts:list)
+# contactId: 00000000-0000-4000-8000-000000000101
+
+# Link to workflows (replace with real workflow UUIDs from ol workflows:list)
+# workflowIds:
+#   - 00000000-0000-4000-8000-000000000301
+
+metadata:
+  amount: 5000.00
+  currency: USD
+  sku: PROD-001
+  invoiceNumber: "1001"
+
+# rawData: optional raw payload from the source system

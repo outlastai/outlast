@@ -159,3 +159,87 @@ Finally, verify the workflow was created and is ready to run:
 ```bash
 ol workflows:list
 ```
+
+## Creating a Record
+
+Records represent items to track and automate (e.g. invoices, tickets, shipments). Each record has a required title, type, source system, and source record ID. You can link records to contacts and workflows.
+
+### Example record file
+
+Create a YAML or JSON file with your record:
+
+```yaml
+# record.yaml
+title: Invoice INV-2026-001
+type: INVOICE
+status: OPEN
+priority: HIGH
+sourceSystem: SALESFORCE
+sourceRecordId: SF-OPP-12345
+dueAt: 2026-02-15
+metadata:
+  amount: 5000.00
+  currency: USD
+  sku: PROD-001
+contactId: <contact-uuid> # Optional - link to a contact
+workflowIds: # Optional - link to workflows
+  - <workflow-uuid-1>
+  - <workflow-uuid-2>
+```
+
+### Using the SDK
+
+```javascript
+const SDK = require("@outlast/sdk");
+
+async function main() {
+  const client = new SDK.Client({ accessKeyId: "WO00000000000000000000000000000000" });
+  await client.loginWithApiKey(process.env.API_KEY, process.env.API_SECRET);
+
+  const records = new SDK.Records(client);
+
+  // Create a new record
+  const record = await records.createRecord({
+    title: "Invoice INV-2026-001",
+    type: "INVOICE",
+    sourceSystem: "SALESFORCE",
+    sourceRecordId: "SF-OPP-12345",
+    contactId: "contact-uuid",
+    workflowIds: ["workflow-uuid-1", "workflow-uuid-2"]
+  });
+  console.log("Created:", record.id, record.title);
+
+  // Update an existing record by sourceRecordId (same ID triggers upsert)
+  const updated = await records.createRecord({
+    title: "Invoice INV-2026-001",
+    type: "INVOICE",
+    sourceSystem: "SALESFORCE",
+    sourceRecordId: "SF-OPP-12345",
+    status: "BLOCKED",
+    metadata: { amount: 6000.0 },
+    allowOverwrite: true,
+    overwriteFields: ["status", "metadata.amount"]
+  });
+  console.log("Updated:", updated.id);
+}
+```
+
+### Using the CLI
+
+Create a record interactively (prompts for title, type, source system, source record ID, contact, and workflows):
+
+```bash
+ol records:create
+```
+
+Create a record from a file:
+
+```bash
+ol records:create --from-file record.yaml
+```
+
+Update an existing record when the same `sourceRecordId` already exists (requires `--overwrite-fields`):
+
+```bash
+ol records:create --from-file record.yaml --allow-overwrite --overwrite-fields "status,metadata.amount"
+```
