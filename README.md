@@ -79,6 +79,69 @@ npm run start:dashboard # Coming soon
 
 The API server runs at `http://localhost:3000` and the dashboard at `http://localhost:5173`.
 
+## API Overview
+
+Outlast uses [tRPC](https://trpc.io/) to power its API, providing type-safe communication between clients and the server. All API endpoints are available at `/trpc`.
+
+### Authentication
+
+The API uses JWT-based authentication through an identity service. To authenticate, you first exchange your API credentials (`accessKeyId` and `accessKeySecret`) for an access token, then use that token for subsequent requests.
+
+**Step 1: Exchange API credentials for an access token**
+
+```bash
+curl -X POST 'http://localhost:3000/trpc/identity.auth.exchangeApiKey' \
+  -H 'Content-Type: application/json' \
+  -d '{"accessKeyId":"YOUR_ACCESS_KEY_ID","accessKeySecret":"YOUR_ACCESS_KEY_SECRET"}'
+```
+
+> The ol workspaces:login command will create an API key which is located in the `~/.outlast/config.json` file.
+
+This returns a response containing your access token:
+
+Example response:
+
+```json
+{ "result": { "data": { "accessToken": "eyJhbGciOiJSUzI1NiIs..." } } }
+```
+
+**Step 2: Use the token to make API requests**
+
+Include the token in the `Authorization` header and your `accessKeyId` in the `x-access-key-id` header:
+
+Example request for creating a record:
+
+```bash
+curl -X POST 'http://localhost:3000/trpc/createRecord' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <ACCESS_TOKEN>' \
+  -H 'x-access-key-id: YOUR_ACCESS_KEY_ID' \
+  -d '{"title":"Test Record","type":"GENERIC","sourceSystem":"MANUAL","sourceRecordId":"test-123"}'
+```
+
+### Available Endpoints
+
+| Endpoint                       | Type     | Description                       |
+| ------------------------------ | -------- | --------------------------------- |
+| `identity.auth.exchangeApiKey` | mutation | Exchange API key for access token |
+| `identity.auth.login`          | mutation | Login with username/password      |
+| `identity.auth.refresh`        | mutation | Refresh access token              |
+| `createRecord`                 | mutation | Create a new record               |
+| `updateRecord`                 | mutation | Update an existing record         |
+| `deleteRecord`                 | mutation | Delete a record                   |
+| `listRecords`                  | query    | List records with pagination      |
+| `getRecord`                    | query    | Get a record by ID                |
+| `getRecordHistory`             | query    | Get history for a record          |
+| `createWorkflow`               | mutation | Create a new workflow             |
+| `updateWorkflow`               | mutation | Update an existing workflow       |
+| `deleteWorkflow`               | mutation | Delete a workflow                 |
+| `listWorkflows`                | query    | List workflows                    |
+| `getWorkflow`                  | query    | Get a workflow by ID              |
+
+For queries, use the procedure name as a URL parameter: `GET /trpc/listRecords?input={}`.
+
+For mutations, send a POST request with the input as JSON in the body.
+
 ## Using the Command-Line Tool
 
 First, link the CLI globally to make the `ol` command available on your system:
