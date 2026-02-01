@@ -4,37 +4,12 @@
 import * as fs from "node:fs/promises";
 import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import { Flags } from "@oclif/core";
-import { recordFileSchema } from "@outlast/common";
+import { recordFileSchema, RECORD_TYPE_CHOICES, PRIORITY_CHOICES } from "@outlast/common";
 import { Contacts, Records, Workflows, type CreateRecordRequest } from "@outlast/sdk";
 import { parse as parseYaml } from "yaml";
 import { BaseCommand } from "../../BaseCommand.js";
 import errorHandler from "../../errorHandler.js";
 import { formatZodErrors } from "../../utils/formatZodErrors.js";
-
-const RECORD_TYPES = [
-  { name: "Generic", value: "GENERIC" },
-  { name: "Purchase Order", value: "PURCHASE_ORDER" },
-  { name: "Inventory Item", value: "INVENTORY_ITEM" },
-  { name: "Invoice", value: "INVOICE" },
-  { name: "Shipment", value: "SHIPMENT" },
-  { name: "Ticket", value: "TICKET" },
-  { name: "Return", value: "RETURN" }
-] as const;
-
-const SOURCE_SYSTEMS = [
-  { name: "CSV", value: "CSV" },
-  { name: "Odoo", value: "ODOO" },
-  { name: "Salesforce", value: "SALESFORCE" },
-  { name: "SAP", value: "SAP" },
-  { name: "Email", value: "EMAIL" },
-  { name: "Manual", value: "MANUAL" }
-] as const;
-
-const PRIORITIES = [
-  { name: "Low", value: "LOW" },
-  { name: "Medium", value: "MEDIUM" },
-  { name: "High", value: "HIGH" }
-] as const;
 
 export default class Create extends BaseCommand<typeof Create> {
   static override readonly description = "create a new record";
@@ -90,7 +65,7 @@ export default class Create extends BaseCommand<typeof Create> {
         recordData = {
           title: fileData.title,
           type: fileData.type,
-          sourceSystem: fileData.sourceSystem,
+          sourceSystem: "MANUAL",
           sourceRecordId: fileData.sourceRecordId,
           status: fileData.status,
           priority: fileData.priority,
@@ -128,12 +103,7 @@ export default class Create extends BaseCommand<typeof Create> {
 
       const type = await select({
         message: "Type",
-        choices: [...RECORD_TYPES]
-      });
-
-      const sourceSystem = await select({
-        message: "Source system",
-        choices: [...SOURCE_SYSTEMS]
+        choices: [...RECORD_TYPE_CHOICES]
       });
 
       const sourceRecordId = await input({
@@ -144,7 +114,7 @@ export default class Create extends BaseCommand<typeof Create> {
       const priority = await select({
         message: "Priority",
         default: "LOW",
-        choices: [...PRIORITIES]
+        choices: [...PRIORITY_CHOICES]
       });
 
       const contactsResource = new Contacts(client);
@@ -194,7 +164,7 @@ export default class Create extends BaseCommand<typeof Create> {
       recordData = {
         title,
         type: type as CreateRecordRequest["type"],
-        sourceSystem: sourceSystem as CreateRecordRequest["sourceSystem"],
+        sourceSystem: "MANUAL",
         sourceRecordId,
         priority: priority as CreateRecordRequest["priority"],
         contactId: contactId || undefined,

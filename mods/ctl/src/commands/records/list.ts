@@ -2,6 +2,7 @@
  * Copyright (C) 2026 by Outlast.
  */
 import { Flags } from "@oclif/core";
+import type { RecordStatusValue, RecordTypeValue } from "@outlast/common";
 import { Records } from "@outlast/sdk";
 import { BaseCommand } from "../../BaseCommand.js";
 import errorHandler from "../../errorHandler.js";
@@ -46,16 +47,8 @@ export default class List extends BaseCommand<typeof List> {
     try {
       const records = new Records(client);
       const result = await records.listRecords({
-        status: status as "OPEN" | "DONE" | "BLOCKED" | "ARCHIVED" | undefined,
-        type: type as
-          | "GENERIC"
-          | "PURCHASE_ORDER"
-          | "INVENTORY_ITEM"
-          | "INVOICE"
-          | "SHIPMENT"
-          | "TICKET"
-          | "RETURN"
-          | undefined,
+        status: status as RecordStatusValue | undefined,
+        type: type as RecordTypeValue | undefined,
         skip,
         take
       });

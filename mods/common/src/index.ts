@@ -44,6 +44,9 @@ export {
   PriorityLevel,
   SourceSystem,
   Channel,
+  RECORD_TYPE_CHOICES,
+  RECORD_STATUS_CHOICES,
+  PRIORITY_CHOICES,
   // Contact schemas
   createContactSchema,
   getContactSchema,

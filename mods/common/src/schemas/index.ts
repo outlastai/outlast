@@ -24,7 +24,11 @@ export {
   RiskLevel,
   PriorityLevel,
   SourceSystem,
-  Channel
+  Channel,
+  // Record CLI/prompt choices
+  RECORD_TYPE_CHOICES,
+  RECORD_STATUS_CHOICES,
+  PRIORITY_CHOICES
 } from "./record.js";
 
 export {

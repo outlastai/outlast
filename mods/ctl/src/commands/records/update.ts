@@ -3,9 +3,12 @@
  */
 import { confirm, input, select } from "@inquirer/prompts";
 import { Args, Flags } from "@oclif/core";
-import { Records } from "@outlast/sdk";
+import { RECORD_STATUS_CHOICES, PRIORITY_CHOICES } from "@outlast/common";
+import { Records, type UpdateRecordRequest } from "@outlast/sdk";
 import { BaseCommand } from "../../BaseCommand.js";
 import errorHandler from "../../errorHandler.js";
+
+const SKIP_CHOICE = { name: "Skip (no change)", value: "" };
 
 export default class Update extends BaseCommand<typeof Update> {
   static override readonly description = "update an existing record";
@@ -31,10 +34,6 @@ export default class Update extends BaseCommand<typeof Update> {
       char: "s",
       description: "New status (OPEN, DONE, BLOCKED, ARCHIVED)"
     }),
-    type: Flags.string({
-      description:
-        "New type (GENERIC, PURCHASE_ORDER, INVENTORY_ITEM, INVOICE, SHIPMENT, TICKET, RETURN)"
-    }),
     priority: Flags.string({
       char: "p",
       description: "New priority (LOW, MEDIUM, HIGH)"
@@ -49,22 +48,9 @@ export default class Update extends BaseCommand<typeof Update> {
   public async run(): Promise<void> {
     const client = await this.createClient();
     const { id } = this.args;
-    const { title, status, type, priority, interactive } = this.flags;
+    const { title, status, priority, interactive } = this.flags;
 
-    const updates: {
-      id: string;
-      title?: string;
-      status?: "OPEN" | "DONE" | "BLOCKED" | "ARCHIVED";
-      type?:
-        | "GENERIC"
-        | "PURCHASE_ORDER"
-        | "INVENTORY_ITEM"
-        | "INVOICE"
-        | "SHIPMENT"
-        | "TICKET"
-        | "RETURN";
-      priority?: "LOW" | "MEDIUM" | "HIGH" | null;
-    } = { id };
+    const updates: UpdateRecordRequest = { id };
 
     if (interactive) {
       this.log("This utility will help you update a Record.");
@@ -78,15 +64,15 @@ export default class Update extends BaseCommand<typeof Update> {
 
       const newStatus = await select({
         message: "New status",
-        choices: [
-          { name: "Skip (no change)", value: "" },
-          { name: "OPEN", value: "OPEN" },
-          { name: "DONE", value: "DONE" },
-          { name: "BLOCKED", value: "BLOCKED" },
-          { name: "ARCHIVED", value: "ARCHIVED" }
-        ]
+        choices: [SKIP_CHOICE, ...RECORD_STATUS_CHOICES]
       });
-      if (newStatus) updates.status = newStatus as "OPEN" | "DONE" | "BLOCKED" | "ARCHIVED";
+      if (newStatus) updates.status = newStatus as UpdateRecordRequest["status"];
+
+      const newPriority = await select({
+        message: "New priority",
+        choices: [SKIP_CHOICE, ...PRIORITY_CHOICES]
+      });
+      if (newPriority) updates.priority = newPriority as UpdateRecordRequest["priority"];
 
       const ready = await confirm({
         message: "Ready to update record?"
@@ -98,17 +84,8 @@ export default class Update extends BaseCommand<typeof Update> {
       }
     } else {
       if (title) updates.title = title;
-      if (status) updates.status = status as "OPEN" | "DONE" | "BLOCKED" | "ARCHIVED";
-      if (type)
-        updates.type = type as
-          | "GENERIC"
-          | "PURCHASE_ORDER"
-          | "INVENTORY_ITEM"
-          | "INVOICE"
-          | "SHIPMENT"
-          | "TICKET"
-          | "RETURN";
-      if (priority) updates.priority = priority as "LOW" | "MEDIUM" | "HIGH";
+      if (status) updates.status = status as UpdateRecordRequest["status"];
+      if (priority) updates.priority = priority as UpdateRecordRequest["priority"];
     }
 
     if (Object.keys(updates).length === 1) {

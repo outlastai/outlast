@@ -80,10 +80,10 @@ export interface RecordCreateInput {
 
 /**
  * Record update input type.
+ * Only these fields are updatable; type and sourceSystem/sourceRecordId are set at creation only.
  */
 export interface RecordUpdateInput {
   title?: string;
-  type?: RecordTypeValue;
   status?: RecordStatusValue;
   risk?: RiskLevelValue | null;
   priority?: PriorityLevelValue | null;

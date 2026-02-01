@@ -162,10 +162,13 @@ export type CreateRecordRequest = {
   overwriteFields?: string[];
 };
 
+/**
+ * Request to update a record. Only these fields are updatable;
+ * type and sourceSystem/sourceRecordId are set at creation only.
+ */
 export type UpdateRecordRequest = {
   id: string;
   title?: string;
-  type?: RecordType;
   status?: RecordStatus;
   risk?: RiskLevel | null;
   priority?: PriorityLevel | null;

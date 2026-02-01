@@ -66,6 +66,47 @@ export const Channel = {
   WHATSAPP: "WHATSAPP"
 } as const;
 
+/**
+ * CLI/prompt choices for record type (name + value for inquirer/select).
+ */
+export const RECORD_TYPE_CHOICES: readonly {
+  name: string;
+  value: (typeof RecordType)[keyof typeof RecordType];
+}[] = [
+  { name: "Generic", value: RecordType.GENERIC },
+  { name: "Purchase Order", value: RecordType.PURCHASE_ORDER },
+  { name: "Inventory Item", value: RecordType.INVENTORY_ITEM },
+  { name: "Invoice", value: RecordType.INVOICE },
+  { name: "Shipment", value: RecordType.SHIPMENT },
+  { name: "Ticket", value: RecordType.TICKET },
+  { name: "Return", value: RecordType.RETURN }
+];
+
+/**
+ * CLI/prompt choices for record status (name + value for inquirer/select).
+ */
+export const RECORD_STATUS_CHOICES: readonly {
+  name: string;
+  value: (typeof RecordStatus)[keyof typeof RecordStatus];
+}[] = [
+  { name: "Open", value: RecordStatus.OPEN },
+  { name: "Done", value: RecordStatus.DONE },
+  { name: "Blocked", value: RecordStatus.BLOCKED },
+  { name: "Archived", value: RecordStatus.ARCHIVED }
+];
+
+/**
+ * CLI/prompt choices for priority (name + value for inquirer/select).
+ */
+export const PRIORITY_CHOICES: readonly {
+  name: string;
+  value: (typeof PriorityLevel)[keyof typeof PriorityLevel];
+}[] = [
+  { name: "Low", value: PriorityLevel.LOW },
+  { name: "Medium", value: PriorityLevel.MEDIUM },
+  { name: "High", value: PriorityLevel.HIGH }
+];
+
 const recordTypeEnum = z.enum([
   "GENERIC",
   "PURCHASE_ORDER",
@@ -134,21 +175,11 @@ export type GetRecordInput = z.infer<typeof getRecordSchema>;
 
 /**
  * Schema for updating an existing record.
+ * Only these fields are updatable; type and sourceSystem/sourceRecordId are set at creation only.
  */
 export const updateRecordSchema = z.object({
   id: z.uuid({ error: "Invalid record ID" }),
   title: z.string().min(1).optional(),
-  type: z
-    .enum([
-      "GENERIC",
-      "PURCHASE_ORDER",
-      "INVENTORY_ITEM",
-      "INVOICE",
-      "SHIPMENT",
-      "TICKET",
-      "RETURN"
-    ])
-    .optional(),
   status: z.enum(["OPEN", "DONE", "BLOCKED", "ARCHIVED"]).optional(),
   risk: z.enum(["LOW", "MEDIUM", "HIGH"]).nullable().optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]).nullable().optional(),
