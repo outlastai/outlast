@@ -34,6 +34,8 @@ npx @47ng/cloak generate
 
 Copy the generated key to `OUTLAST_IDENTITY_CLOAK_ENCRYPTION_KEY` in your `.env` file.
 
+In `.env`, set `OUTLAST_IDENTITY_DATABASE_URL` to a dedicated Postgres database for identity (e.g. `postgresql://postgres:postgres@localhost:5432/outlast_identity`). This is separate from the main app database.
+
 Now, build the identity module and generate RSA keys for signing and verifying authentication tokens:
 
 ```bash
@@ -45,19 +47,27 @@ Copy the generated keys to `OUTLAST_IDENTITY_PRIVATE_KEY` and `OUTLAST_IDENTITY_
 
 ### Starting the Database
 
-First, start Postgres which stores all Outlast data including workflows, records, and contacts:
+Outlast uses **two Postgres databases**: one for the API server (workflows, records, contacts) and one for identity (users, auth, workspaces). Both can run on the same Postgres instance with different database names.
+
+1. Start Postgres:
 
 ```bash
 npm run start:postgres
 ```
 
-Then, run the migrations to create the database schema or bring it in sync with the latest changes:
+2. Set up the **main app database** (schema and migrations):
 
 ```bash
 npm run db:migrate
 ```
 
-Optionally, seed the database with sample data to help you explore the platform:
+3. Set up the **identity database** (required for login and the default owner user). Run once; it creates the `outlast_identity` DB if needed and applies the identity schema:
+
+```bash
+npm run db:setup:identity
+```
+
+4. Optionally, seed the main database with sample data:
 
 ```bash
 npm run db:seed

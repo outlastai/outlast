@@ -29,7 +29,8 @@
     "db:reset": "npm run db:reset -w @outlast/apiserver",
     "db:push": "npm run db:push -w @outlast/apiserver",
     "db:studio": "npm run db:studio -w @outlast/apiserver",
-    "db:seed": "npm run db:seed -w @outlast/apiserver"
+    "db:seed": "npm run db:seed -w @outlast/apiserver",
+    "db:setup:identity": "npm run build -w @outlast/identity && npm run db:setup -w @outlast/identity"
   },
   "lint-staged": {
     "*.{ts,tsx,js,mjs}": [
