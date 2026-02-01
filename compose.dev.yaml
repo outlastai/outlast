@@ -1,0 +1,12 @@
+services:
+  adminer:
+    image: adminer:standalone
+    restart: always
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - 8282:8080
+
+networks:
+  outlast-network:
+    driver: bridge
