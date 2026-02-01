@@ -33,7 +33,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       this.error("No active workspace. Run 'ol workspaces:login' first.");
     }
 
-    const client = new Client({ endpoint: activeWorkspace.endpoint });
+    const client = new Client({
+      endpoint: activeWorkspace.endpoint,
+      workspaceAccessKeyId: activeWorkspace.workspaceAccessKeyId
+    });
     await client.loginWithApiKey(activeWorkspace.accessKeyId, activeWorkspace.accessKeySecret);
     return client;
   }

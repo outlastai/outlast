@@ -19,7 +19,7 @@ export default class Active extends Command {
       return;
     }
 
-    const { workspaceName, workspaceRef, accessKeyId, endpoint } = activeWorkspace;
+    const { workspaceName, workspaceRef, workspaceAccessKeyId, endpoint } = activeWorkspace;
     const ui = cliui({ width: 200 });
 
     ui.div(
@@ -27,7 +27,7 @@ export default class Active extends Command {
         "------------------\n" +
         `NAME: \t${workspaceName}\n` +
         `REF: \t${workspaceRef}\n` +
-        `ACCESS KEY ID: \t${accessKeyId}\n` +
+        `WORKSPACE ACCESS KEY ID: \t${workspaceAccessKeyId ?? "(re-run ol workspaces:login to set)"}\n` +
         `ENDPOINT: \t${endpoint}\n`
     );
 

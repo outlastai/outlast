@@ -13,7 +13,7 @@ export type JsonObject = { [key: string]: unknown };
 
 export type ClientConfig = {
   endpoint?: string;
-  accessKeyId?: string;
+  workspaceAccessKeyId?: string;
 };
 
 export type LoginResponse = {

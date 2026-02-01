@@ -82,7 +82,7 @@ export default class Login extends BaseCommand<typeof Login> {
             });
 
       // Set the workspace's accessKeyId for API key creation
-      client.setAccessKeyId(selectedWorkspace.accessKeyId);
+      client.setWorkspaceAccessKeyId(selectedWorkspace.accessKeyId);
 
       const apiKeysClient = new ApiKeys(client);
       const apiKey = await apiKeysClient.createApiKey({
@@ -103,7 +103,8 @@ export default class Login extends BaseCommand<typeof Login> {
           accessKeyId: apiKeyId,
           accessKeySecret: apiKeySecret,
           workspaceRef: selectedWorkspace.ref,
-          workspaceName: selectedWorkspace.name
+          workspaceName: selectedWorkspace.name,
+          workspaceAccessKeyId: selectedWorkspace.accessKeyId
         },
         config
       );

@@ -50,7 +50,7 @@ const decodeJwtPayload = (token: string): Record<string, unknown> => {
  *
  * async function main() {
  *   const client = new SDK.Client({
- *     accessKeyId: "WO00000000000000000000000000000000",
+ *     workspaceAccessKeyId: "WO00000000000000000000000000000000",
  *     endpoint: "http://localhost:3000"
  *   });
  *   await client.loginWithApiKey("AK00000...", "secret");
@@ -65,18 +65,18 @@ const decodeJwtPayload = (token: string): Record<string, unknown> => {
 class Client {
   private readonly endpoint: string;
   private accessToken?: string;
-  private accessKeyId?: string;
+  private workspaceAccessKeyId: string;
 
   /**
    * Constructs a new Client object.
    *
    * @param {ClientConfig} config - Client configuration
    * @param {string} config.endpoint - The base URL of the Outlast API
-   * @param {string} config.accessKeyId - The workspace access key ID
+   * @param {string} [config.workspaceAccessKeyId] - The workspace access key ID (WO...). Required for apiserver calls.
    */
   constructor(config: ClientConfig = {}) {
     this.endpoint = config.endpoint ?? DEFAULT_ENDPOINT;
-    this.accessKeyId = config.accessKeyId;
+    this.workspaceAccessKeyId = config.workspaceAccessKeyId ?? "";
   }
 
   /**
@@ -116,13 +116,17 @@ class Client {
         typeof payload.accessKeyId === "string" ? payload.accessKeyId : undefined;
 
       this.accessToken = accessToken;
-      this.accessKeyId = (session as { accessKeyId?: string }).accessKeyId ?? accessKeyIdFromToken;
+      const sessionAccessKeyId =
+        (session as { accessKeyId?: string }).accessKeyId ?? accessKeyIdFromToken;
+      if (sessionAccessKeyId) {
+        this.workspaceAccessKeyId = sessionAccessKeyId;
+      }
 
       return {
         accessToken,
         refreshToken: (session as { refreshToken?: string }).refreshToken,
         idToken: (session as { idToken?: string }).idToken,
-        accessKeyId: this.accessKeyId
+        accessKeyId: sessionAccessKeyId
       };
     } catch (error) {
       throw toSDKError(error);
@@ -152,7 +156,6 @@ class Client {
       })) as { accessToken: string };
 
       this.accessToken = session.accessToken;
-      this.accessKeyId = accessKeyId;
     } catch (error) {
       throw toSDKError(error);
     }
@@ -168,22 +171,22 @@ class Client {
   }
 
   /**
-   * Returns the current access key id.
+   * Returns the workspace access key id (WO...).
    *
-   * @return {string | undefined} - Current access key id
+   * @return {string} - Workspace access key id, or empty string if not set
    */
-  getAccessKeyId(): string | undefined {
-    return this.accessKeyId;
+  getWorkspaceAccessKeyId(): string {
+    return this.workspaceAccessKeyId;
   }
 
   /**
-   * Sets the access key id for the client.
+   * Sets the workspace access key id.
    * This is useful when you need to switch workspace context.
    *
-   * @param {string} accessKeyId - The access key id to set
+   * @param {string} workspaceAccessKeyId - The workspace access key id to set (WO...)
    */
-  setAccessKeyId(accessKeyId: string): void {
-    this.accessKeyId = accessKeyId;
+  setWorkspaceAccessKeyId(workspaceAccessKeyId: string): void {
+    this.workspaceAccessKeyId = workspaceAccessKeyId;
   }
 
   /**
@@ -198,7 +201,7 @@ class Client {
   /** @internal */
   async request<T>(
     handler: (client: TrpcClient) => Promise<T>,
-    options?: { accessKeyId?: string; allowUnauthenticated?: boolean }
+    options?: { workspaceAccessKeyId?: string; allowUnauthenticated?: boolean }
   ): Promise<T> {
     const allowUnauthenticated = options?.allowUnauthenticated ?? false;
     if (!allowUnauthenticated && !this.accessToken) {
@@ -206,21 +209,21 @@ class Client {
     }
 
     try {
-      const client = this.createTrpcClient(this.buildHeaders(options?.accessKeyId));
+      const client = this.createTrpcClient(this.buildHeaders(options?.workspaceAccessKeyId));
       return await handler(client);
     } catch (error) {
       throw toSDKError(error);
     }
   }
 
-  private buildHeaders(accessKeyIdOverride?: string): Record<string, string> {
+  private buildHeaders(workspaceAccessKeyIdOverride?: string): Record<string, string> {
     const headers: Record<string, string> = {};
     if (this.accessToken) {
       headers.Authorization = `Bearer ${this.accessToken}`;
     }
-    const accessKeyId = accessKeyIdOverride ?? this.accessKeyId;
-    if (accessKeyId) {
-      headers["x-access-key-id"] = accessKeyId;
+    const workspaceAccessKeyId = workspaceAccessKeyIdOverride ?? this.workspaceAccessKeyId;
+    if (workspaceAccessKeyId) {
+      headers["x-access-key-id"] = workspaceAccessKeyId;
     }
     return headers;
   }

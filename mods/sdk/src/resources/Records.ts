@@ -24,10 +24,10 @@ import type {
  * async function main(request) {
  *   const apiKey = "your-api-key";
  *   const apiSecret = "your-api-secret";
- *   const accessKeyId = "WO00000000000000000000000000000000";
+ *   const workspaceAccessKeyId = "WO00000000000000000000000000000000";
  *
  *   try {
- *     const client = new SDK.Client({ accessKeyId });
+ *     const client = new SDK.Client({ workspaceAccessKeyId });
  *     await client.loginWithApiKey(apiKey, apiSecret);
  *
  *     const records = new SDK.Records(client);
