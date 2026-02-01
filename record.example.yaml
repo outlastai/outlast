@@ -1,8 +1,6 @@
 # Example record for ol records:create --from-file
-
 title: Invoice INV-2026-001
 type: INVOICE
-sourceSystem: SALESFORCE
 sourceRecordId: SF-OPP-12345
 
 # Optional fields (status defaults to OPEN, priority defaults to LOW)

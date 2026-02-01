@@ -247,7 +247,6 @@ title: Invoice INV-2026-001
 type: INVOICE
 status: OPEN
 priority: HIGH
-sourceSystem: SALESFORCE
 sourceRecordId: SF-OPP-12345
 dueAt: 2026-02-15
 metadata:
