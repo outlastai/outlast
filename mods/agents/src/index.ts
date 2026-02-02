@@ -73,3 +73,41 @@ export {
   type WorkflowRunnerDependencies,
   type CronSchedulerDependencies
 } from "./runner/index.js";
+
+// Graph exports (LangGraph procurement workflow)
+export {
+  ProcurementStateAnnotation,
+  createProcurementGraph,
+  createCheckpointer,
+  setupCheckpointer,
+  type ProcurementState,
+  type ProcurementStateUpdate,
+  type ProcurementRecord,
+  type ProcurementContact,
+  type ProcurementMessage,
+  type GraphDependencies,
+  type CompileGraphOptions,
+  type CreateCheckpointerOptions,
+  type WorkflowGraphConfig
+} from "./graph/index.js";
+
+// Eval exports (workflow evaluation)
+export {
+  runScenario,
+  runWorkflowEval,
+  createMockToolExecutor,
+  createInterruptHandler,
+  similarityTest,
+  compareArgs,
+  verifyScenario,
+  streamEvalEvents,
+  printVerification,
+  printEvalResults,
+  toJSON,
+  type EvalEvent,
+  type ScenarioResult,
+  type EvalResults,
+  type ToolCallRecord,
+  type SimilarityResult,
+  type VerificationResult
+} from "./eval/index.js";
