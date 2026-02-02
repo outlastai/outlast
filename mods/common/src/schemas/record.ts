@@ -231,7 +231,7 @@ export const listRecordsSchema = z.object({
 export type ListRecordsInput = z.infer<typeof listRecordsSchema>;
 
 /**
- * Schema for getting record history.
+ * Schema for getting record history (input).
  */
 export const getRecordHistorySchema = z.object({
   recordId: z.uuid({ error: "Invalid record ID" }),
@@ -243,6 +243,92 @@ export const getRecordHistorySchema = z.object({
  * Input type for getting record history.
  */
 export type GetRecordHistoryInput = z.infer<typeof getRecordHistorySchema>;
+
+/**
+ * Conversation message (from LangGraph state).
+ */
+export const recordConversationMessageSchema = z.object({
+  role: z.enum(["system", "user", "assistant", "tool"]),
+  content: z.string(),
+  channel: z.string().optional(),
+  channelMessageId: z.string().optional(),
+  metadata: z.record(z.string(), z.unknown()).optional()
+});
+
+/**
+ * Response shape for getRecordHistory when querying LangGraph checkpoints.
+ */
+export const getRecordHistoryResponseSchema = z.object({
+  messages: z.array(recordConversationMessageSchema),
+  attempts: z.number(),
+  lastChannel: z.string().nullable(),
+  workflowStatus: z.string().nullable().optional(),
+  updatedAt: z.string().nullable().optional()
+});
+
+export type RecordConversationMessage = z.infer<typeof recordConversationMessageSchema>;
+export type GetRecordHistoryResponse = z.infer<typeof getRecordHistoryResponseSchema>;
+
+/**
+ * Schema for getRecordHistoryTimeline (input).
+ */
+export const getRecordHistoryTimelineSchema = z.object({
+  recordId: z.uuid({ error: "Invalid record ID" })
+});
+
+export type GetRecordHistoryTimelineInput = z.infer<typeof getRecordHistoryTimelineSchema>;
+
+/**
+ * Timeline entry (one checkpoint).
+ */
+export const recordHistoryTimelineEntrySchema = z.object({
+  id: z.string(),
+  timestamp: z.string(),
+  step: z.number().optional(),
+  nodeExecuted: z.string().optional()
+});
+
+export type RecordHistoryTimelineEntry = z.infer<typeof recordHistoryTimelineEntrySchema>;
+
+/**
+ * Schema for resumeWorkflow (resume paused workflow with external response).
+ */
+export const resumeWorkflowSchema = z.object({
+  recordId: z.uuid({ error: "Invalid record ID" }),
+  workflowId: z.uuid({ error: "Invalid workflow ID" }).optional(),
+  response: z.object({
+    channel: z.enum(["EMAIL", "PHONE", "SMS"]),
+    content: z.string(),
+    channelMessageId: z.string().optional(),
+    metadata: z.record(z.string(), z.unknown()).optional()
+  })
+});
+
+export type ResumeWorkflowInput = z.infer<typeof resumeWorkflowSchema>;
+
+/**
+ * Schema for submitHumanReview (human review decision).
+ */
+export const submitHumanReviewSchema = z.object({
+  recordId: z.uuid({ error: "Invalid record ID" }),
+  workflowId: z.uuid({ error: "Invalid workflow ID" }).optional(),
+  decision: z.object({
+    approved: z.boolean(),
+    notes: z.string(),
+    nextAction: z.enum(["continue", "escalate", "close"])
+  })
+});
+
+export type SubmitHumanReviewInput = z.infer<typeof submitHumanReviewSchema>;
+
+/**
+ * Schema for listPendingReviews (input).
+ */
+export const listPendingReviewsSchema = z.object({
+  workspaceId: z.string().min(1).optional()
+});
+
+export type ListPendingReviewsInput = z.infer<typeof listPendingReviewsSchema>;
 
 /**
  * Schema for a record file (JSON or YAML).

@@ -29,6 +29,12 @@ export {
   deleteRecordSchema,
   listRecordsSchema,
   getRecordHistorySchema,
+  getRecordHistoryResponseSchema,
+  getRecordHistoryTimelineSchema,
+  recordHistoryTimelineEntrySchema,
+  resumeWorkflowSchema,
+  submitHumanReviewSchema,
+  listPendingReviewsSchema,
   recordFileSchema,
   type CreateRecordInput,
   type GetRecordInput,
@@ -36,6 +42,12 @@ export {
   type DeleteRecordInput,
   type ListRecordsInput,
   type GetRecordHistoryInput,
+  type GetRecordHistoryResponse,
+  type GetRecordHistoryTimelineInput,
+  type RecordHistoryTimelineEntry,
+  type ResumeWorkflowInput,
+  type SubmitHumanReviewInput,
+  type ListPendingReviewsInput,
   type RecordFileInput,
   // Record enums
   RecordType,
@@ -73,7 +85,29 @@ export {
   schedulerRulesFileSchema,
   type WorkflowFileInput,
   type WorkflowUpdateFileInput,
-  type SchedulerRulesFileInput
+  type SchedulerRulesFileInput,
+  // LangGraph workflow / evals
+  workflowLangGraphFileSchema,
+  evalsSectionSchema,
+  evalsContextSchema,
+  evalScenarioSchema,
+  graphNodeSchema,
+  graphNodesSchema,
+  nodeConditionSchema,
+  workflowSchedulerSchema,
+  type WorkflowLangGraphFile,
+  type EvalsSection,
+  type EvalsContext,
+  type EvalScenario,
+  type EvalInitialState,
+  type EvalExpected,
+  type EvalInterruptResume,
+  type ExpectedToolCall,
+  type ExpectedLlmResponse,
+  type GraphNode,
+  type GraphNodes,
+  type NodeCondition,
+  type WorkflowScheduler
 } from "./schemas/index.js";
 
 // Types (entities and client)
@@ -99,8 +133,6 @@ export type {
   Workflow,
   WorkflowCreateInput,
   WorkflowUpdateInput,
-  // RecordHistory types
-  RecordHistory,
   // Database client
   DbClient
 } from "./types/index.js";

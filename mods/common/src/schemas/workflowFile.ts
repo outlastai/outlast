@@ -3,6 +3,7 @@
  */
 import { z } from "zod/v4";
 import { recordStatusEnum } from "./schedulerRules.js";
+import { evalsSectionSchema, graphNodesSchema } from "./workflowLangGraph.js";
 
 /**
  * Schema for scheduler rules in a workflow file.
@@ -33,6 +34,7 @@ export type SchedulerRulesFileInput = z.infer<typeof schedulerRulesFileSchema>;
 /**
  * Schema for a workflow file (JSON or YAML).
  * Used for `ol workflows:create --from-file` and `ol workflows:update --from-file`.
+ * Supports both legacy format and LangGraph format with evals.
  */
 export const workflowFileSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -43,12 +45,19 @@ export const workflowFileSchema = z.object({
   tools: z.array(z.string()).nullable().optional(),
   schedule: z.string().nullable().optional(),
 
+  // Graph structure (LangGraph format)
+  entrypoint: z.string().optional(),
+  nodes: graphNodesSchema.optional(),
+
   // Template fields
   emailTemplate: z.string().nullable().optional(),
   callPrompt: z.string().nullable().optional(),
 
   // Nested scheduler rules
-  schedulerRules: schedulerRulesFileSchema.optional()
+  schedulerRules: schedulerRulesFileSchema.optional(),
+
+  // LangGraph: evaluation scenarios (optional)
+  evals: evalsSectionSchema.optional()
 });
 
 /**
@@ -69,12 +78,19 @@ export const workflowUpdateFileSchema = z.object({
   tools: z.array(z.string()).nullable().optional(),
   schedule: z.string().nullable().optional(),
 
+  // Graph structure (LangGraph format)
+  entrypoint: z.string().optional(),
+  nodes: graphNodesSchema.optional(),
+
   // Template fields
   emailTemplate: z.string().nullable().optional(),
   callPrompt: z.string().nullable().optional(),
 
   // Nested scheduler rules
-  schedulerRules: schedulerRulesFileSchema.optional()
+  schedulerRules: schedulerRulesFileSchema.optional(),
+
+  // LangGraph: evaluation scenarios (optional)
+  evals: evalsSectionSchema.optional()
 });
 
 /**

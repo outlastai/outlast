@@ -23,8 +23,6 @@ export type {
   Workflow,
   WorkflowCreateInput,
   WorkflowUpdateInput,
-  // RecordHistory types
-  RecordHistory,
   // Database client
   DbClient
 } from "./client.js";

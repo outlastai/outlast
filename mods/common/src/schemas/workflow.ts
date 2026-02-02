@@ -2,6 +2,15 @@
  * Copyright (C) 2026 by Outlast.
  */
 import { z } from "zod/v4";
+import { graphNodesSchema } from "./workflowLangGraph.js";
+
+const graphDefinitionSchema = z
+  .object({
+    entrypoint: z.string(),
+    nodes: graphNodesSchema
+  })
+  .nullable()
+  .optional();
 
 /**
  * Schema for creating a new workflow.
@@ -15,7 +24,8 @@ export const createWorkflowSchema = z.object({
   tools: z.array(z.unknown()).nullable().optional(),
   schedule: z.string().nullable().optional(),
   emailTemplate: z.string().nullable().optional(),
-  callPrompt: z.string().nullable().optional()
+  callPrompt: z.string().nullable().optional(),
+  graphDefinition: graphDefinitionSchema
 });
 
 /**
@@ -48,7 +58,8 @@ export const updateWorkflowSchema = z.object({
   tools: z.array(z.unknown()).nullable().optional(),
   schedule: z.string().nullable().optional(),
   emailTemplate: z.string().nullable().optional(),
-  callPrompt: z.string().nullable().optional()
+  callPrompt: z.string().nullable().optional(),
+  graphDefinition: graphDefinitionSchema
 });
 
 /**

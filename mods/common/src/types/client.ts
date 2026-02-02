@@ -127,6 +127,14 @@ export interface ContactCreateInput {
 // =============================================================================
 
 /**
+ * Graph definition (entrypoint + nodes) stored on workflow.
+ */
+export interface WorkflowGraphDefinition {
+  entrypoint: string;
+  nodes: { [key: string]: unknown };
+}
+
+/**
  * Workflow entity type matching the Prisma model.
  */
 export interface Workflow {
@@ -141,6 +149,7 @@ export interface Workflow {
   schedule: string | null;
   emailTemplate: string | null;
   callPrompt: string | null;
+  graphDefinition: WorkflowGraphDefinition | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -159,6 +168,7 @@ export interface WorkflowCreateInput {
   schedule?: string | null;
   emailTemplate?: string | null;
   callPrompt?: string | null;
+  graphDefinition?: WorkflowGraphDefinition | null;
 }
 
 /**
@@ -174,25 +184,7 @@ export interface WorkflowUpdateInput {
   schedule?: string | null;
   emailTemplate?: string | null;
   callPrompt?: string | null;
-}
-
-// =============================================================================
-// RecordHistory Types
-// =============================================================================
-
-/**
- * RecordHistory entity type matching the Prisma model.
- */
-export interface RecordHistory {
-  id: string;
-  recordId: string;
-  status: RecordStatusValue;
-  aiNote: string | null;
-  humanNote: string | null;
-  agent: string;
-  channel: ChannelValue;
-  channelMetadata: JsonObject | null;
-  createdAt: Date;
+  graphDefinition?: WorkflowGraphDefinition | null;
 }
 
 // =============================================================================
@@ -244,13 +236,5 @@ export interface DbClient {
     findUnique: (args: { where: { id: string } }) => Promise<Workflow | null>;
     update: (args: { where: { id: string }; data: WorkflowUpdateInput }) => Promise<Workflow>;
     delete: (args: { where: { id: string } }) => Promise<Workflow>;
-  };
-  recordHistory: {
-    findMany: (args?: {
-      skip?: number;
-      take?: number;
-      where?: { recordId?: string };
-      orderBy?: { createdAt: "asc" | "desc" };
-    }) => Promise<RecordHistory[]>;
   };
 }
