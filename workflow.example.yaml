@@ -1,56 +1,220 @@
 # Example workflow for ol workflows:create --from-file
-name: Invoice Follow-up Workflow
-description: Automated follow-up for unpaid invoices
+# Security contract procurement: contact providers to see if they can fulfill requirements
+#
+# Format: graph-based workflow with entrypoint, nodes, templates, scheduler, and optional evals.
+# The graph is persisted to the DB and executed by the LangGraph engine at runtime.
+name: Security Contract Procurement
+description: Reach out to security providers with contract requirements (armed/unarmed, length, scope) and track their ability to fulfill
 
 # Model configuration (optional, defaults shown)
 model: gpt-4o
 temperature: 0.7
-timezone: "America/New_York"
 
 # System prompt defines the agent's personality and instructions
 systemPrompt: |
-  You are a professional accounts receivable agent.
-  Follow up on unpaid invoices politely but firmly.
+  You are a procurement specialist for security contracts.
+  Your job is to contact security providers and determine whether they can fulfill a contract
+  based on the requirements we send: guard type (armed vs unarmed), contract length,
+  number of positions, site details, and any special requirements.
+  Be professional and clear. Summarize their response and whether they can meet the requirements.
+  If they need more information, ask. If they decline or cannot fulfill, note the reason.
 
-# Available tools: sendEmail, sendCall, updateRecordStatus, getRecord, getRecordHistory
-tools:
-  - sendEmail
-  - sendCall
-  - updateRecordStatus
-  - getRecord
-  - getRecordHistory
+# Graph structure (YAML-driven; persisted to DB)
+entrypoint: analyzeRecord
+
+nodes:
+  analyzeRecord:
+    type: llm
+    prompt: |
+      Analyze this procurement record and decide next action. 
+      Consider: attempts made, last channel used.
+      Reply with one of: needs_email, needs_call, escalate, complete.
+    next:
+      - condition: needs_email
+        target: sendEmail
+      - condition: needs_call
+        target: sendCall
+      - condition: escalate
+        target: humanReview
+      - condition: complete
+        target: markComplete
+
+  sendEmail:
+    type: tool
+    tool: sendEmail
+    next: waitForResponse
+
+  sendCall:
+    type: tool
+    tool: sendCall
+    next: waitForResponse
+
+  waitForResponse:
+    type: interrupt
+    timeout: "3d"
+    onTimeout: analyzeRecord
+    onResponse: processResponse
+    next: processResponse
+
+  processResponse:
+    type: llm
+    prompt: |
+      Process the incoming response and update record accordingly.
+    next: analyzeRecord
+
+  humanReview:
+    type: interrupt
+    reason: escalation
+    next: analyzeRecord
+
+  markComplete:
+    type: tool
+    tool: updateRecordStatus
+    args:
+      status: DONE
+    next: __end__
 
 # Cron schedule for when the workflow runs (standard cron format)
-# Examples: "0 9 * * *" = daily at 9am, "*/2 * * * *" = every 2 minutes
-schedule: "*/2 * * * *"
+schedule: "0 9 * * 1-5"
 
-# Email template using Handlebars syntax
-# Available variables: {{contact.*}}, {{record.*}}, {{workspace.*}}
+# Email template using Handlebars syntax (used by sendEmail node)
 emailTemplate: |
   Dear {{contact.name}},
 
-  This is a friendly reminder regarding invoice {{record.title}}.
-  Current status: {{record.status}}
-  {{#if record.dueAt}}Due date: {{record.dueAt}}{{/if}}
+  We are seeking security providers for the following contract and would like to know if your organization can fulfill the requirements.
 
-  Please let us know if you have any questions.
+  **Contract summary – {{record.title}}**
+  - Guard type: {{record.metadata.guardType}} (armed / unarmed)
+  - Contract length: {{record.metadata.contractLength}}
+  - Number of positions: {{record.metadata.positions}}
+  {{#if record.metadata.siteName}}- Site: {{record.metadata.siteName}}{{/if}}
+  {{#if record.metadata.requirements}}- Additional requirements: {{record.metadata.requirements}}{{/if}}
 
-  Best regards,
-  {{workspace.name}}
+  Please reply with:
+  1. Whether you can fulfill this contract
+  2. Any clarifications or constraints
+  3. Expected timeline or next steps
 
-# Call prompt template (same Handlebars variables available)
+  Thank you,
+  Procurement Team
+
+# Call prompt template (used by sendCall node)
 callPrompt: |
-  Call regarding invoice {{record.title}}.
+  Security contract procurement call – {{record.title}}.
   Contact: {{contact.name}}
-  Amount due information is in the record metadata.
-  Priority: {{record.priority}}
+  Requirements: {{record.metadata.guardType}} guards, {{record.metadata.contractLength}} contract, {{record.metadata.positions}} positions.
+  Ask if they can fulfill and capture their response (yes/no, conditions, timeline).
 
 # Scheduler rules control workflow execution behavior
 schedulerRules:
-  minDaysBetweenActions: 3 # Minimum days between actions on same record
-  maxActionAttempts: 5 # Maximum total attempts per record
-  enabledOnWeekends: true # Whether to run on weekends
-  enabledStatuses: # Only process records with these statuses
+  minDaysBetweenActions: 5
+  maxActionAttempts: 4
+  recordTooRecentDays: 1
+  recentUpdateCooldownDays: 2
+  enabledStatuses:
     - OPEN
     - BLOCKED
-  batchSize: 25 # Max records to process per run
+  batchSize: 20
+
+# -----------------------------------------------------------------------------
+# Evals: run with ol workflows:eval --file workflow.example.yaml
+# -----------------------------------------------------------------------------
+evals:
+  context:
+    workspaceId: test-workspace-001
+
+  scenarios:
+    - id: happy-path-provider-confirms
+      description: Provider replies by email confirming they can fulfill the security contract
+      initialState:
+        record:
+          id: test-record-security-001
+          title: "Downtown site – 6 unarmed guards"
+          status: OPEN
+          priority: HIGH
+          type: INVOICE
+          metadata:
+            guardType: unarmed
+            contractLength: "12 months"
+            positions: 6
+            siteName: "Downtown Office"
+        contact:
+          name: "Jane Smith"
+          email: "jane@secureguard.com"
+          phone: "+15551234567"
+          preferredChannel: EMAIL
+
+      mockTools:
+        sendEmail:
+          response: { success: true, messageId: "msg-001" }
+        sendCall:
+          response: { success: true, callId: "call-001", transcription: "" }
+        updateRecordStatus:
+          response: { success: true }
+
+      interrupts:
+        - resume:
+            channel: EMAIL
+            content: "We can fulfill this contract. We have 6 unarmed guards available for 12 months at your Downtown site. We can start within two weeks."
+            channelMessageId: "reply-001"
+
+      expected:
+        nodeSequence:
+          - analyzeRecord
+          - sendEmail
+          - waitForResponse
+          - processResponse
+          - analyzeRecord
+          - markComplete
+        finalState:
+          workflowStatus: COMPLETED
+        record:
+          status: DONE
+        toolsCalled:
+          - name: sendEmail
+            matchMode: judge
+          - name: updateRecordStatus
+            args:
+              status: DONE
+            matchMode: judge
+        llmResponses:
+          - node: processResponse
+            # LLM phrasing varies; assert it acknowledged the outcome (DONE/updated)
+            contains: ["DONE"]
+
+    - id: escalation-no-response
+      description: Provider does not respond; workflow escalates after retries
+      initialState:
+        record:
+          id: test-record-security-002
+          title: "Airport – 4 armed guards"
+          status: BLOCKED
+          priority: HIGH
+          metadata:
+            guardType: armed
+            contractLength: "6 months"
+            positions: 4
+        contact:
+          name: "Bob Jones"
+          email: "bob@armored.com"
+          phone: "+15559876543"
+          preferredChannel: EMAIL
+
+      mockTools:
+        sendEmail:
+          response: { success: true, messageId: "msg-002" }
+        sendCall:
+          response: { success: true, callId: "call-002", transcription: "" }
+        updateRecordStatus:
+          response: { success: true }
+
+      interrupts:
+        - resume:
+            channel: EMAIL
+            content: ""
+            timeout: true
+
+      expected:
+        toolsCalled:
+          - name: sendEmail
+            matchMode: judge
