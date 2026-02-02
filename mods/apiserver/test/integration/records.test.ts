@@ -213,13 +213,16 @@ describe("Records API", () => {
       const { caller, db } = createAuthenticatedCaller();
       const created = await caller.createRecord(validCreateRecordInput);
 
-      // Add mock history
+      // Add mock history (when no checkpointer, falls back to RecordHistory table)
       db._addRecordHistory(created.id, createMockRecordHistory(created.id, { status: "OPEN" }));
       db._addRecordHistory(created.id, createMockRecordHistory(created.id, { status: "DONE" }));
 
       const result = await caller.getRecordHistory({ recordId: created.id });
 
-      expect(result).to.have.length(2);
+      expect(result).to.have.property("messages");
+      expect(result).to.have.property("attempts");
+      expect(result.messages).to.be.an("array");
+      expect(result.attempts).to.equal(2);
     });
 
     it("should return empty for record with no history", async () => {
@@ -228,7 +231,8 @@ describe("Records API", () => {
 
       const result = await caller.getRecordHistory({ recordId: created.id });
 
-      expect(result).to.have.length(0);
+      expect(result.messages).to.have.length(0);
+      expect(result.attempts).to.equal(0);
     });
 
     it("should reject when not authenticated", async () => {

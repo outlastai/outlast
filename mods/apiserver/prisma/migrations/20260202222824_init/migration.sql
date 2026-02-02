@@ -19,6 +19,9 @@ CREATE TYPE "Channel" AS ENUM ('EMAIL', 'PHONE', 'SMS', 'WHATSAPP');
 -- CreateEnum
 CREATE TYPE "ItemStatus" AS ENUM ('PENDING', 'RECEIVED', 'BACKORDERED', 'CANCELLED');
 
+-- CreateEnum
+CREATE TYPE "WorkflowStatus" AS ENUM ('IDLE', 'RUNNING', 'WAITING_RESPONSE', 'WAITING_HUMAN', 'COMPLETED');
+
 -- CreateTable
 CREATE TABLE "records" (
     "id" TEXT NOT NULL,
@@ -36,6 +39,7 @@ CREATE TABLE "records" (
     "source_record_id" TEXT,
     "metadata" JSONB,
     "raw_data" JSONB,
+    "workflow_status" "WorkflowStatus",
 
     CONSTRAINT "records_pkey" PRIMARY KEY ("id")
 );
@@ -82,6 +86,7 @@ CREATE TABLE "workflows" (
     "schedule" TEXT,
     "email_template" TEXT,
     "call_prompt" TEXT,
+    "graph_definition" JSONB,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -144,6 +149,9 @@ CREATE INDEX "records_contact_id_idx" ON "records"("contact_id");
 
 -- CreateIndex
 CREATE INDEX "records_source_system_source_record_id_idx" ON "records"("source_system", "source_record_id");
+
+-- CreateIndex
+CREATE INDEX "records_workflow_status_idx" ON "records"("workflow_status");
 
 -- CreateIndex
 CREATE INDEX "record_history_record_id_idx" ON "record_history"("record_id");

@@ -198,7 +198,10 @@ describe("Records API Functions", () => {
       const getHistory = createGetRecordHistory(mockDb);
       const result = await getHistory({ recordId: created.id });
 
-      expect(result).to.have.length(2);
+      expect(result).to.have.property("messages");
+      expect(result).to.have.property("attempts");
+      expect(result.messages).to.have.length(2);
+      expect(result.attempts).to.equal(2);
     });
 
     it("should return empty array for record with no history", async () => {
@@ -208,7 +211,9 @@ describe("Records API Functions", () => {
       const getHistory = createGetRecordHistory(mockDb);
       const result = await getHistory({ recordId: created.id });
 
-      expect(result).to.have.length(0);
+      expect(result).to.have.property("messages");
+      expect(result.messages).to.have.length(0);
+      expect(result.attempts).to.equal(0);
     });
 
     it("should support pagination for history", async () => {
@@ -226,7 +231,8 @@ describe("Records API Functions", () => {
       const getHistory = createGetRecordHistory(mockDb);
       const result = await getHistory({ recordId: created.id, skip: 1, take: 2 });
 
-      expect(result).to.have.length(2);
+      expect(result).to.have.property("messages");
+      expect(result.messages).to.have.length(2);
     });
   });
 });

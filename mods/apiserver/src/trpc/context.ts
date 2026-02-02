@@ -2,8 +2,10 @@
  * Copyright (C) 2026 by Outlast.
  */
 import type { Request } from "express";
+import type { BaseCheckpointSaver } from "@langchain/langgraph-checkpoint";
 import { toPem, verifyToken, type DbClient, type TokenPayload } from "@outlast/common";
 import { prisma } from "../db.js";
+import { getCheckpointer } from "../checkpointer.js";
 
 /**
  * Extracts bearer token from Authorization header.
@@ -24,6 +26,8 @@ const publicKey = toPem(process.env.OUTLAST_IDENTITY_PUBLIC_KEY);
  */
 export interface Context {
   db: DbClient;
+  /** LangGraph checkpointer when set at startup; used for getRecordHistory / timeline / resume */
+  checkpointer?: BaseCheckpointSaver;
   isAuthenticated: boolean;
   user?: TokenPayload;
   accessKeyId?: string;
@@ -63,6 +67,7 @@ export async function createContext({ req }: { req: Request }): Promise<Context>
   // but have minor type differences
   return {
     db: prisma as unknown as DbClient,
+    checkpointer: getCheckpointer(),
     isAuthenticated: Boolean(user),
     user,
     accessKeyId: accessKeyIdFromHeader,

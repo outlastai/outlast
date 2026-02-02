@@ -16,10 +16,18 @@ import cors from "cors";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter, createContext } from "./trpc/index.js";
 import { assertEnvsAreSet, ValidationError } from "@outlast/common";
-import { createWorkflowRunner, createCronScheduler, listRecordsForWorkflow } from "@outlast/agents";
+import {
+  createWorkflowRunner,
+  createCronScheduler,
+  listRecordsForWorkflow,
+  setupCheckpointer,
+  type RecordStatus
+} from "@outlast/agents";
 import { logger } from "./logger.js";
 import { createOwnerUser } from "./startup.js";
 import { prisma } from "./db.js";
+import { setCheckpointer } from "./checkpointer.js";
+import { setGraphDeps } from "./graphDeps.js";
 import { dummySendEmail, dummyInitiateCall } from "./services/dummy.js";
 import {
   createGetWorkflowWithRules,
@@ -29,6 +37,8 @@ import {
   createUpdateRecordStatus,
   createListSchedulableWorkflows
 } from "./api/runner/index.js";
+import "./api/records/index.js";
+import { webhooksRouter } from "./webhooks/index.js";
 
 // Re-export AppRouter type for clients
 export type { AppRouter } from "./trpc/index.js";
@@ -60,6 +70,9 @@ app.use(
   })
 );
 
+// Webhooks (email reply, call transcription)
+app.use("/webhooks", webhooksRouter);
+
 // Error handling middleware
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -78,27 +91,46 @@ async function start() {
   // Create owner user if environment variables are set
   await createOwnerUser();
 
+  // LangGraph checkpointer (optional: requires OUTLAST_DATABASE_URL)
+  const databaseUrl = process.env.OUTLAST_DATABASE_URL;
+  if (databaseUrl) {
+    try {
+      const cp = await setupCheckpointer(databaseUrl);
+      setCheckpointer(cp);
+      logger.info("LangGraph checkpointer ready");
+    } catch (err) {
+      logger.warn("LangGraph checkpointer not initialized", {
+        error: err instanceof Error ? err.message : String(err)
+      });
+    }
+  }
+
   // Create runner API functions (dependency injection)
   const getWorkflowWithRules = createGetWorkflowWithRules(prisma);
   const getRecordWithContact = createGetRecordWithContact(prisma);
-  const getRecordHistory = createGetRecordHistory(prisma);
+  const getRecordHistoryFromRunner = createGetRecordHistory(prisma);
   const createRecordHistory = createCreateRecordHistory(prisma);
   const updateRecordStatus = createUpdateRecordStatus(prisma);
   const listSchedulableWorkflows = createListSchedulableWorkflows(prisma);
 
-  // Create workflow runner
-  const workflowRunner = createWorkflowRunner({
-    getWorkflow: (id) => getWorkflowWithRules({ id }),
-    listRecordsForWorkflow: (wfId, statuses, batch) =>
+  // Create workflow runner (getRecordHistory uses runner API; tRPC uses records API with checkpointer)
+  const workflowRunnerDeps = {
+    getWorkflow: (id: string) => getWorkflowWithRules({ id }),
+    listRecordsForWorkflow: (wfId: string, statuses: RecordStatus[], batch: number) =>
       listRecordsForWorkflow(prisma, wfId, statuses, batch),
-    getRecord: (id) => getRecordWithContact({ id }),
-    getRecordHistory: (recordId, limit) => getRecordHistory({ recordId, limit }),
-    createRecordHistory: (data) => createRecordHistory(data),
-    updateRecordStatus: (id, status) => updateRecordStatus({ id, status }),
+    getRecord: (id: string) => getRecordWithContact({ id }),
+    getRecordHistory: (recordId: string, limit?: number) =>
+      getRecordHistoryFromRunner({ recordId, limit }),
+    createRecordHistory: (data: Parameters<typeof createRecordHistory>[0]) =>
+      createRecordHistory(data),
+    updateRecordStatus: (id: string, status: string) => updateRecordStatus({ id, status }),
     sendEmail: dummySendEmail,
     initiateCall: dummyInitiateCall,
     openaiApiKey: process.env.OUTLAST_OPENAI_API_KEY!
-  });
+  };
+  setGraphDeps(workflowRunnerDeps);
+
+  const workflowRunner = createWorkflowRunner(workflowRunnerDeps);
 
   // Create and start cron scheduler
   const scheduler = createCronScheduler({

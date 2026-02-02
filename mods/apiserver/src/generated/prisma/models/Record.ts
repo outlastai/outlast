@@ -38,6 +38,7 @@ export type RecordMinAggregateOutputType = {
   updatedAt: Date | null
   sourceSystem: $Enums.SourceSystem | null
   sourceRecordId: string | null
+  workflowStatus: $Enums.WorkflowStatus | null
 }
 
 export type RecordMaxAggregateOutputType = {
@@ -54,6 +55,7 @@ export type RecordMaxAggregateOutputType = {
   updatedAt: Date | null
   sourceSystem: $Enums.SourceSystem | null
   sourceRecordId: string | null
+  workflowStatus: $Enums.WorkflowStatus | null
 }
 
 export type RecordCountAggregateOutputType = {
@@ -72,6 +74,7 @@ export type RecordCountAggregateOutputType = {
   sourceRecordId: number
   metadata: number
   rawData: number
+  workflowStatus: number
   _all: number
 }
 
@@ -90,6 +93,7 @@ export type RecordMinAggregateInputType = {
   updatedAt?: true
   sourceSystem?: true
   sourceRecordId?: true
+  workflowStatus?: true
 }
 
 export type RecordMaxAggregateInputType = {
@@ -106,6 +110,7 @@ export type RecordMaxAggregateInputType = {
   updatedAt?: true
   sourceSystem?: true
   sourceRecordId?: true
+  workflowStatus?: true
 }
 
 export type RecordCountAggregateInputType = {
@@ -124,6 +129,7 @@ export type RecordCountAggregateInputType = {
   sourceRecordId?: true
   metadata?: true
   rawData?: true
+  workflowStatus?: true
   _all?: true
 }
 
@@ -215,6 +221,7 @@ export type RecordGroupByOutputType = {
   sourceRecordId: string | null
   metadata: runtime.JsonValue | null
   rawData: runtime.JsonValue | null
+  workflowStatus: $Enums.WorkflowStatus | null
   _count: RecordCountAggregateOutputType | null
   _min: RecordMinAggregateOutputType | null
   _max: RecordMaxAggregateOutputType | null
@@ -254,6 +261,7 @@ export type RecordWhereInput = {
   sourceRecordId?: Prisma.StringNullableFilter<"Record"> | string | null
   metadata?: Prisma.JsonNullableFilter<"Record">
   rawData?: Prisma.JsonNullableFilter<"Record">
+  workflowStatus?: Prisma.EnumWorkflowStatusNullableFilter<"Record"> | $Enums.WorkflowStatus | null
   contact?: Prisma.XOR<Prisma.ContactNullableScalarRelationFilter, Prisma.ContactWhereInput> | null
   history?: Prisma.RecordHistoryListRelationFilter
   recordWorkflows?: Prisma.RecordWorkflowListRelationFilter
@@ -276,6 +284,7 @@ export type RecordOrderByWithRelationInput = {
   sourceRecordId?: Prisma.SortOrderInput | Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   rawData?: Prisma.SortOrderInput | Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   contact?: Prisma.ContactOrderByWithRelationInput
   history?: Prisma.RecordHistoryOrderByRelationAggregateInput
   recordWorkflows?: Prisma.RecordWorkflowOrderByRelationAggregateInput
@@ -301,6 +310,7 @@ export type RecordWhereUniqueInput = Prisma.AtLeast<{
   sourceRecordId?: Prisma.StringNullableFilter<"Record"> | string | null
   metadata?: Prisma.JsonNullableFilter<"Record">
   rawData?: Prisma.JsonNullableFilter<"Record">
+  workflowStatus?: Prisma.EnumWorkflowStatusNullableFilter<"Record"> | $Enums.WorkflowStatus | null
   contact?: Prisma.XOR<Prisma.ContactNullableScalarRelationFilter, Prisma.ContactWhereInput> | null
   history?: Prisma.RecordHistoryListRelationFilter
   recordWorkflows?: Prisma.RecordWorkflowListRelationFilter
@@ -323,6 +333,7 @@ export type RecordOrderByWithAggregationInput = {
   sourceRecordId?: Prisma.SortOrderInput | Prisma.SortOrder
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   rawData?: Prisma.SortOrderInput | Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.RecordCountOrderByAggregateInput
   _max?: Prisma.RecordMaxOrderByAggregateInput
   _min?: Prisma.RecordMinOrderByAggregateInput
@@ -347,6 +358,7 @@ export type RecordScalarWhereWithAggregatesInput = {
   sourceRecordId?: Prisma.StringNullableWithAggregatesFilter<"Record"> | string | null
   metadata?: Prisma.JsonNullableWithAggregatesFilter<"Record">
   rawData?: Prisma.JsonNullableWithAggregatesFilter<"Record">
+  workflowStatus?: Prisma.EnumWorkflowStatusNullableWithAggregatesFilter<"Record"> | $Enums.WorkflowStatus | null
 }
 
 export type RecordCreateInput = {
@@ -364,6 +376,7 @@ export type RecordCreateInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   contact?: Prisma.ContactCreateNestedOneWithoutRecordsInput
   history?: Prisma.RecordHistoryCreateNestedManyWithoutRecordInput
   recordWorkflows?: Prisma.RecordWorkflowCreateNestedManyWithoutRecordInput
@@ -386,6 +399,7 @@ export type RecordUncheckedCreateInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryUncheckedCreateNestedManyWithoutRecordInput
   recordWorkflows?: Prisma.RecordWorkflowUncheckedCreateNestedManyWithoutRecordInput
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutRecordInput
@@ -406,6 +420,7 @@ export type RecordUpdateInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   contact?: Prisma.ContactUpdateOneWithoutRecordsNestedInput
   history?: Prisma.RecordHistoryUpdateManyWithoutRecordNestedInput
   recordWorkflows?: Prisma.RecordWorkflowUpdateManyWithoutRecordNestedInput
@@ -428,6 +443,7 @@ export type RecordUncheckedUpdateInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryUncheckedUpdateManyWithoutRecordNestedInput
   recordWorkflows?: Prisma.RecordWorkflowUncheckedUpdateManyWithoutRecordNestedInput
   items?: Prisma.ItemUncheckedUpdateManyWithoutRecordNestedInput
@@ -449,6 +465,7 @@ export type RecordCreateManyInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
 }
 
 export type RecordUpdateManyMutationInput = {
@@ -466,6 +483,7 @@ export type RecordUpdateManyMutationInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
 }
 
 export type RecordUncheckedUpdateManyInput = {
@@ -484,6 +502,7 @@ export type RecordUncheckedUpdateManyInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
 }
 
 export type RecordCountOrderByAggregateInput = {
@@ -502,6 +521,7 @@ export type RecordCountOrderByAggregateInput = {
   sourceRecordId?: Prisma.SortOrder
   metadata?: Prisma.SortOrder
   rawData?: Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrder
 }
 
 export type RecordMaxOrderByAggregateInput = {
@@ -518,6 +538,7 @@ export type RecordMaxOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   sourceSystem?: Prisma.SortOrder
   sourceRecordId?: Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrder
 }
 
 export type RecordMinOrderByAggregateInput = {
@@ -534,6 +555,7 @@ export type RecordMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
   sourceSystem?: Prisma.SortOrder
   sourceRecordId?: Prisma.SortOrder
+  workflowStatus?: Prisma.SortOrder
 }
 
 export type RecordScalarRelationFilter = {
@@ -585,6 +607,10 @@ export type EnumSourceSystemFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type NullableEnumWorkflowStatusFieldUpdateOperationsInput = {
+  set?: $Enums.WorkflowStatus | null
 }
 
 export type RecordCreateNestedOneWithoutHistoryInput = {
@@ -686,6 +712,7 @@ export type RecordCreateWithoutHistoryInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   contact?: Prisma.ContactCreateNestedOneWithoutRecordsInput
   recordWorkflows?: Prisma.RecordWorkflowCreateNestedManyWithoutRecordInput
   items?: Prisma.ItemCreateNestedManyWithoutRecordInput
@@ -707,6 +734,7 @@ export type RecordUncheckedCreateWithoutHistoryInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   recordWorkflows?: Prisma.RecordWorkflowUncheckedCreateNestedManyWithoutRecordInput
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutRecordInput
 }
@@ -742,6 +770,7 @@ export type RecordUpdateWithoutHistoryInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   contact?: Prisma.ContactUpdateOneWithoutRecordsNestedInput
   recordWorkflows?: Prisma.RecordWorkflowUpdateManyWithoutRecordNestedInput
   items?: Prisma.ItemUpdateManyWithoutRecordNestedInput
@@ -763,6 +792,7 @@ export type RecordUncheckedUpdateWithoutHistoryInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   recordWorkflows?: Prisma.RecordWorkflowUncheckedUpdateManyWithoutRecordNestedInput
   items?: Prisma.ItemUncheckedUpdateManyWithoutRecordNestedInput
 }
@@ -782,6 +812,7 @@ export type RecordCreateWithoutContactInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryCreateNestedManyWithoutRecordInput
   recordWorkflows?: Prisma.RecordWorkflowCreateNestedManyWithoutRecordInput
   items?: Prisma.ItemCreateNestedManyWithoutRecordInput
@@ -802,6 +833,7 @@ export type RecordUncheckedCreateWithoutContactInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryUncheckedCreateNestedManyWithoutRecordInput
   recordWorkflows?: Prisma.RecordWorkflowUncheckedCreateNestedManyWithoutRecordInput
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutRecordInput
@@ -852,6 +884,7 @@ export type RecordScalarWhereInput = {
   sourceRecordId?: Prisma.StringNullableFilter<"Record"> | string | null
   metadata?: Prisma.JsonNullableFilter<"Record">
   rawData?: Prisma.JsonNullableFilter<"Record">
+  workflowStatus?: Prisma.EnumWorkflowStatusNullableFilter<"Record"> | $Enums.WorkflowStatus | null
 }
 
 export type RecordCreateWithoutRecordWorkflowsInput = {
@@ -869,6 +902,7 @@ export type RecordCreateWithoutRecordWorkflowsInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   contact?: Prisma.ContactCreateNestedOneWithoutRecordsInput
   history?: Prisma.RecordHistoryCreateNestedManyWithoutRecordInput
   items?: Prisma.ItemCreateNestedManyWithoutRecordInput
@@ -890,6 +924,7 @@ export type RecordUncheckedCreateWithoutRecordWorkflowsInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryUncheckedCreateNestedManyWithoutRecordInput
   items?: Prisma.ItemUncheckedCreateNestedManyWithoutRecordInput
 }
@@ -925,6 +960,7 @@ export type RecordUpdateWithoutRecordWorkflowsInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   contact?: Prisma.ContactUpdateOneWithoutRecordsNestedInput
   history?: Prisma.RecordHistoryUpdateManyWithoutRecordNestedInput
   items?: Prisma.ItemUpdateManyWithoutRecordNestedInput
@@ -946,6 +982,7 @@ export type RecordUncheckedUpdateWithoutRecordWorkflowsInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryUncheckedUpdateManyWithoutRecordNestedInput
   items?: Prisma.ItemUncheckedUpdateManyWithoutRecordNestedInput
 }
@@ -965,6 +1002,7 @@ export type RecordCreateWithoutItemsInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   contact?: Prisma.ContactCreateNestedOneWithoutRecordsInput
   history?: Prisma.RecordHistoryCreateNestedManyWithoutRecordInput
   recordWorkflows?: Prisma.RecordWorkflowCreateNestedManyWithoutRecordInput
@@ -986,6 +1024,7 @@ export type RecordUncheckedCreateWithoutItemsInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryUncheckedCreateNestedManyWithoutRecordInput
   recordWorkflows?: Prisma.RecordWorkflowUncheckedCreateNestedManyWithoutRecordInput
 }
@@ -1021,6 +1060,7 @@ export type RecordUpdateWithoutItemsInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   contact?: Prisma.ContactUpdateOneWithoutRecordsNestedInput
   history?: Prisma.RecordHistoryUpdateManyWithoutRecordNestedInput
   recordWorkflows?: Prisma.RecordWorkflowUpdateManyWithoutRecordNestedInput
@@ -1042,6 +1082,7 @@ export type RecordUncheckedUpdateWithoutItemsInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryUncheckedUpdateManyWithoutRecordNestedInput
   recordWorkflows?: Prisma.RecordWorkflowUncheckedUpdateManyWithoutRecordNestedInput
 }
@@ -1061,6 +1102,7 @@ export type RecordCreateManyContactInput = {
   sourceRecordId?: string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: $Enums.WorkflowStatus | null
 }
 
 export type RecordUpdateWithoutContactInput = {
@@ -1078,6 +1120,7 @@ export type RecordUpdateWithoutContactInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryUpdateManyWithoutRecordNestedInput
   recordWorkflows?: Prisma.RecordWorkflowUpdateManyWithoutRecordNestedInput
   items?: Prisma.ItemUpdateManyWithoutRecordNestedInput
@@ -1098,6 +1141,7 @@ export type RecordUncheckedUpdateWithoutContactInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
   history?: Prisma.RecordHistoryUncheckedUpdateManyWithoutRecordNestedInput
   recordWorkflows?: Prisma.RecordWorkflowUncheckedUpdateManyWithoutRecordNestedInput
   items?: Prisma.ItemUncheckedUpdateManyWithoutRecordNestedInput
@@ -1118,6 +1162,7 @@ export type RecordUncheckedUpdateManyWithoutContactInput = {
   sourceRecordId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   rawData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  workflowStatus?: Prisma.NullableEnumWorkflowStatusFieldUpdateOperationsInput | $Enums.WorkflowStatus | null
 }
 
 
@@ -1185,6 +1230,7 @@ export type RecordSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   sourceRecordId?: boolean
   metadata?: boolean
   rawData?: boolean
+  workflowStatus?: boolean
   contact?: boolean | Prisma.Record$contactArgs<ExtArgs>
   history?: boolean | Prisma.Record$historyArgs<ExtArgs>
   recordWorkflows?: boolean | Prisma.Record$recordWorkflowsArgs<ExtArgs>
@@ -1208,6 +1254,7 @@ export type RecordSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   sourceRecordId?: boolean
   metadata?: boolean
   rawData?: boolean
+  workflowStatus?: boolean
   contact?: boolean | Prisma.Record$contactArgs<ExtArgs>
 }, ExtArgs["result"]["record"]>
 
@@ -1227,6 +1274,7 @@ export type RecordSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   sourceRecordId?: boolean
   metadata?: boolean
   rawData?: boolean
+  workflowStatus?: boolean
   contact?: boolean | Prisma.Record$contactArgs<ExtArgs>
 }, ExtArgs["result"]["record"]>
 
@@ -1246,9 +1294,10 @@ export type RecordSelectScalar = {
   sourceRecordId?: boolean
   metadata?: boolean
   rawData?: boolean
+  workflowStatus?: boolean
 }
 
-export type RecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "type" | "title" | "status" | "risk" | "priority" | "contactId" | "dueAt" | "createdAt" | "updatedAt" | "sourceSystem" | "sourceRecordId" | "metadata" | "rawData", ExtArgs["result"]["record"]>
+export type RecordOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "workspaceId" | "type" | "title" | "status" | "risk" | "priority" | "contactId" | "dueAt" | "createdAt" | "updatedAt" | "sourceSystem" | "sourceRecordId" | "metadata" | "rawData" | "workflowStatus", ExtArgs["result"]["record"]>
 export type RecordInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   contact?: boolean | Prisma.Record$contactArgs<ExtArgs>
   history?: boolean | Prisma.Record$historyArgs<ExtArgs>
@@ -1287,6 +1336,7 @@ export type $RecordPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     sourceRecordId: string | null
     metadata: runtime.JsonValue | null
     rawData: runtime.JsonValue | null
+    workflowStatus: $Enums.WorkflowStatus | null
   }, ExtArgs["result"]["record"]>
   composites: {}
 }
@@ -1729,6 +1779,7 @@ export interface RecordFieldRefs {
   readonly sourceRecordId: Prisma.FieldRef<"Record", 'String'>
   readonly metadata: Prisma.FieldRef<"Record", 'Json'>
   readonly rawData: Prisma.FieldRef<"Record", 'Json'>
+  readonly workflowStatus: Prisma.FieldRef<"Record", 'WorkflowStatus'>
 }
     
 

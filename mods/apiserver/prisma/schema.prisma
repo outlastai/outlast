@@ -63,6 +63,14 @@ enum ItemStatus {
   CANCELLED
 }
 
+enum WorkflowStatus {
+  IDLE
+  RUNNING
+  WAITING_RESPONSE
+  WAITING_HUMAN
+  COMPLETED
+}
+
 // =============================================================================
 // Models
 // =============================================================================
@@ -83,6 +91,7 @@ model Record {
   sourceRecordId String?    @map("source_record_id")
   metadata      Json?       @map("metadata")
   rawData       Json?       @map("raw_data")
+  workflowStatus WorkflowStatus? @map("workflow_status")
 
   // Relations
   contact       Contact?    @relation(fields: [contactId], references: [id], onDelete: SetNull)
@@ -95,9 +104,12 @@ model Record {
   @@index([status])
   @@index([contactId])
   @@index([sourceSystem, sourceRecordId])
+  @@index([workflowStatus])
   @@map("records")
 }
 
+// DEPRECATED: Conversation history will be stored in LangGraph checkpoints.
+// getRecordHistory API will query LangGraph instead. Kept for migration period.
 model RecordHistory {
   id              String      @id @default(uuid())
   recordId        String      @map("record_id")
@@ -146,10 +158,11 @@ model Workflow {
   temperature   Float?   @map("temperature")
   tools         Json?    @map("tools")
   schedule      String?  @map("schedule")
-  emailTemplate String?  @map("email_template") @db.Text
-  callPrompt    String?  @map("call_prompt") @db.Text
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  emailTemplate   String?  @map("email_template") @db.Text
+  callPrompt      String?  @map("call_prompt") @db.Text
+  graphDefinition Json?    @map("graph_definition")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   // Relations
   recordWorkflows  RecordWorkflow[]

@@ -7,6 +7,10 @@ import {
   deleteRecordSchema,
   listRecordsSchema,
   getRecordHistorySchema,
+  getRecordHistoryTimelineSchema,
+  resumeWorkflowSchema,
+  submitHumanReviewSchema,
+  listPendingReviewsSchema,
   createContactSchema,
   deleteContactSchema,
   listContactsSchema,
@@ -22,8 +26,14 @@ import {
   createUpdateRecord,
   createDeleteRecord,
   createListRecords,
-  createGetRecordHistory
+  createGetRecordHistory,
+  createGetRecordHistoryTimeline
 } from "../../api/records/index.js";
+import {
+  createResumeWorkflow,
+  createSubmitHumanReview,
+  createListPendingReviews
+} from "../../api/workflows/langgraph.js";
 import {
   createCreateContact,
   createDeleteContact,
@@ -92,12 +102,28 @@ export const protectedRouter = router({
   }),
 
   /**
-   * Get history for a specific record.
+   * Get history for a specific record (LangGraph checkpoints when checkpointer is set).
    */
   getRecordHistory: protectedProcedure
     .input(getRecordHistorySchema)
     .query(async ({ ctx, input }) => {
-      const fn = createGetRecordHistory(ctx.db);
+      const fn = createGetRecordHistory(ctx.db, ctx.checkpointer);
+      return fn(input);
+    }),
+
+  /**
+   * Get checkpoint timeline for a record (debugging/audit). Requires checkpointer.
+   */
+  getRecordHistoryTimeline: protectedProcedure
+    .input(getRecordHistoryTimelineSchema)
+    .query(async ({ ctx, input }) => {
+      if (!ctx.checkpointer) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "LangGraph checkpointer not configured"
+        });
+      }
+      const fn = createGetRecordHistoryTimeline(ctx.checkpointer);
       return fn(input);
     }),
 
@@ -171,5 +197,56 @@ export const protectedRouter = router({
   listWorkflows: protectedProcedure.input(listWorkflowsSchema).query(async ({ ctx, input }) => {
     const fn = createListWorkflows(ctx.db);
     return fn(input);
-  })
+  }),
+
+  // ===========================================================================
+  // LangGraph: resume workflow, human review, pending reviews
+  // ===========================================================================
+
+  /**
+   * Resume a paused workflow with external response (e.g. email reply).
+   */
+  resumeWorkflow: protectedProcedure
+    .input(resumeWorkflowSchema)
+    .mutation(async ({ ctx, input }) => {
+      const workspaceId = getWorkspaceId(ctx);
+      const fn = createResumeWorkflow(
+        ctx.db as Parameters<typeof createResumeWorkflow>[0],
+        ctx.checkpointer,
+        workspaceId
+      );
+      return fn(input);
+    }),
+
+  /**
+   * Submit human review decision for a record.
+   */
+  submitHumanReview: protectedProcedure
+    .input(submitHumanReviewSchema)
+    .mutation(async ({ ctx, input }) => {
+      const workspaceId = getWorkspaceId(ctx);
+      const fn = createSubmitHumanReview(
+        ctx.db as Parameters<typeof createSubmitHumanReview>[0],
+        ctx.checkpointer,
+        workspaceId
+      );
+      return fn(input);
+    }),
+
+  /**
+   * List records pending human review (workflowStatus = WAITING_HUMAN).
+   */
+  listPendingReviews: protectedProcedure
+    .input(listPendingReviewsSchema)
+    .query(async ({ ctx, input }) => {
+      const workspaceId = getWorkspaceId(ctx) ?? input.workspaceId;
+      if (!workspaceId) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "workspaceId required (from context or input)"
+        });
+      }
+      const fn = createListPendingReviews(ctx.db);
+      return fn({ workspaceId });
+    })
 });

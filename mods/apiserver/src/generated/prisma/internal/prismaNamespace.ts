@@ -982,7 +982,8 @@ export const RecordScalarFieldEnum = {
   sourceSystem: 'sourceSystem',
   sourceRecordId: 'sourceRecordId',
   metadata: 'metadata',
-  rawData: 'rawData'
+  rawData: 'rawData',
+  workflowStatus: 'workflowStatus'
 } as const
 
 export type RecordScalarFieldEnum = (typeof RecordScalarFieldEnum)[keyof typeof RecordScalarFieldEnum]
@@ -1029,6 +1030,7 @@ export const WorkflowScalarFieldEnum = {
   schedule: 'schedule',
   emailTemplate: 'emailTemplate',
   callPrompt: 'callPrompt',
+  graphDefinition: 'graphDefinition',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1241,6 +1243,20 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'WorkflowStatus'
+ */
+export type EnumWorkflowStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkflowStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'WorkflowStatus[]'
+ */
+export type ListEnumWorkflowStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkflowStatus[]'>
     
 
 
