@@ -131,22 +131,25 @@ curl -X POST 'http://localhost:3000/trpc/createRecord' \
 
 ### Available Endpoints
 
-| Endpoint                       | Type     | Description                       |
-| ------------------------------ | -------- | --------------------------------- |
-| `identity.auth.exchangeApiKey` | mutation | Exchange API key for access token |
-| `identity.auth.login`          | mutation | Login with username/password      |
-| `identity.auth.refresh`        | mutation | Refresh access token              |
-| `createRecord`                 | mutation | Create a new record               |
-| `updateRecord`                 | mutation | Update an existing record         |
-| `deleteRecord`                 | mutation | Delete a record                   |
-| `listRecords`                  | query    | List records with pagination      |
-| `getRecord`                    | query    | Get a record by ID                |
-| `getRecordHistory`             | query    | Get history for a record          |
-| `createWorkflow`               | mutation | Create a new workflow             |
-| `updateWorkflow`               | mutation | Update an existing workflow       |
-| `deleteWorkflow`               | mutation | Delete a workflow                 |
-| `listWorkflows`                | query    | List workflows                    |
-| `getWorkflow`                  | query    | Get a workflow by ID              |
+| Endpoint                       | Type     | Description                                   |
+| ------------------------------ | -------- | --------------------------------------------- |
+| `identity.auth.exchangeApiKey` | mutation | Exchange API key for access token             |
+| `identity.auth.login`          | mutation | Login with username/password                  |
+| `identity.auth.refresh`        | mutation | Refresh access token                          |
+| `createRecord`                 | mutation | Create a new record                           |
+| `updateRecord`                 | mutation | Update an existing record                     |
+| `deleteRecord`                 | mutation | Delete a record                               |
+| `listRecords`                  | query    | List records with pagination                  |
+| `getRecord`                    | query    | Get a record by ID                            |
+| `getRecordHistory`             | query    | Get conversation history for a record         |
+| `listPendingReviews`           | query    | List records awaiting human review            |
+| `submitHumanReview`            | mutation | Submit human review decision for a record     |
+| `resumeWorkflow`               | mutation | Resume paused workflow with external response |
+| `createWorkflow`               | mutation | Create a new workflow                         |
+| `updateWorkflow`               | mutation | Update an existing workflow                   |
+| `deleteWorkflow`               | mutation | Delete a workflow                             |
+| `listWorkflows`                | query    | List workflows                                |
+| `getWorkflow`                  | query    | Get a workflow by ID                          |
 
 For queries, use the procedure name as a URL parameter: `GET /trpc/listRecords?input={}`.
 
@@ -170,67 +173,130 @@ You can now use `ol --help` to see all available commands.
 
 ## Creating a Workflow
 
-Workflows define how Outlast automates follow-ups on records. Each workflow specifies an AI model, available tools, a schedule, and rules for when to take action. Create a YAML file with your workflow configuration:
+Workflows define how Outlast automates follow-ups on records using a graph-based structure powered by LangGraph. Each workflow specifies an AI model, a graph of nodes (LLM calls, tool invocations, interrupts), templates, and scheduler rules. Create a YAML file with your workflow configuration:
 
 ```yaml
-name: Invoice Follow-up Workflow
-description: Automated follow-up for unpaid invoices
+name: Security Contract Procurement
+description: Reach out to security providers with contract requirements
 model: gpt-4o
 temperature: 0.7
 
 systemPrompt: |
-  You are a professional accounts receivable agent.
-  Follow up on unpaid invoices politely but firmly.
+  You are a procurement specialist for security contracts.
+  Your job is to contact security providers and determine whether they can fulfill a contract.
+  Be professional and clear. Summarize their response and whether they can meet the requirements.
 
-tools:
-  - sendEmail
-  - sendCall
-  - updateRecordStatus
-  - getRecord
-  - getRecordHistory
+# Graph structure: defines the workflow logic
+entrypoint: analyzeRecord
 
-schedule: "0/5 * * * *" # every 5 minutes
+nodes:
+  analyzeRecord:
+    type: llm
+    prompt: |
+      Analyze this procurement record and decide next action.
+      Reply with one of: needs_email, needs_call, escalate, complete.
+    next:
+      - condition: needs_email
+        target: sendEmail
+      - condition: needs_call
+        target: sendCall
+      - condition: escalate
+        target: humanReview
+      - condition: complete
+        target: markComplete
 
-# Internally we use Handlebars to render the template with the record and contact data
+  sendEmail:
+    type: tool
+    tool: sendEmail
+    next: waitForResponse
+
+  sendCall:
+    type: tool
+    tool: sendCall
+    next: waitForResponse
+
+  waitForResponse:
+    type: interrupt
+    timeout: "3d"
+    onTimeout: analyzeRecord
+    onResponse: processResponse
+
+  processResponse:
+    type: llm
+    prompt: |
+      Process the incoming response and update record accordingly.
+    next: analyzeRecord
+
+  humanReview:
+    type: interrupt
+    reason: escalation
+    next: analyzeRecord
+
+  markComplete:
+    type: tool
+    tool: updateRecordStatus
+    args:
+      status: DONE
+    next: __end__
+
+schedule: "0 9 * * 1-5" # Weekdays at 9am
+
+# Email template using Handlebars syntax
 emailTemplate: |
-
   Dear {{contact.name}},
 
-  This is a friendly reminder regarding invoice {{record.title}}.
-  Current status: {{record.status}}
-  {{#if record.dueAt}}Due date: {{record.dueAt}}{{/if}}
+  We are seeking security providers for the following contract.
 
-  Please let us know if you have any questions.
+  **Contract summary – {{record.title}}**
+  - Guard type: {{record.metadata.guardType}}
+  - Contract length: {{record.metadata.contractLength}}
+  - Number of positions: {{record.metadata.positions}}
 
-  Best regards,
-  {{workspace.name}}
+  Please reply with whether you can fulfill this contract.
+
+  Thank you,
+  Procurement Team
 
 callPrompt: |
-  Call regarding invoice {{record.title}}.
+  Security contract procurement call – {{record.title}}.
   Contact: {{contact.name}}
-  Amount due information is in the record metadata.
-  Priority: {{record.priority}}
+  Ask if they can fulfill and capture their response.
 
-# Scheduler rules define when to take action based on the record's status, priority, and history
 schedulerRules:
-  minDaysBetweenActions: 3
-  maxActionAttempts: 5
+  minDaysBetweenActions: 5
+  maxActionAttempts: 4
   enabledStatuses:
     - OPEN
     - BLOCKED
-  batchSize: 25
+  batchSize: 20
 ```
 
-Then, create the workflow using the CLI to register it with the system:
+### Node Types
+
+| Type        | Description                                                                        |
+| ----------- | ---------------------------------------------------------------------------------- |
+| `llm`       | Calls the LLM with a prompt; uses `next` conditions to route based on response     |
+| `tool`      | Invokes a tool (sendEmail, sendCall, updateRecordStatus, etc.)                     |
+| `interrupt` | Pauses workflow for external input (email reply, call transcription, human review) |
+
+### Creating and Testing Workflows
+
+Create the workflow using the CLI:
 
 ```bash
 ol workflows:create -f workflow.yaml
 ```
 
-Finally, verify the workflow was created and is ready to run:
+Verify the workflow was created:
 
 ```bash
 ol workflows:list
+```
+
+Run workflow evaluations (if `evals` section is defined in your YAML):
+
+```bash
+ol workflows:eval -f workflow.yaml
 ```
 
 ## Creating a Record
