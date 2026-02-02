@@ -78,7 +78,14 @@ export default class Update extends BaseCommand<typeof Update> {
           this.error(`Invalid workflow file:\n${formatZodErrors(parseResult.error)}`);
         }
 
-        updates = { id, ...parseResult.data };
+        const fileData = parseResult.data;
+        updates = { id, ...fileData };
+        if (fileData.entrypoint && fileData.nodes) {
+          updates.graphDefinition = {
+            entrypoint: fileData.entrypoint,
+            nodes: fileData.nodes
+          };
+        }
       } catch (e) {
         if ((e as Error).name === "ExitPromptError") throw e;
         this.error(`Failed to read file: ${(e as Error).message}`);

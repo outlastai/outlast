@@ -28,6 +28,7 @@
   "dependencies": {
     "@inquirer/prompts": "^7.1.0",
     "@oclif/core": "^4.8.0",
+    "@outlast/agents": "^1.0.0",
     "@outlast/common": "^1.0.0",
     "@outlast/sdk": "^1.0.0",
     "cliui": "^8.0.1",

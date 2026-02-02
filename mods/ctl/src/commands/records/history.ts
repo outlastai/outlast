@@ -53,21 +53,19 @@ export default class History extends BaseCommand<typeof History> {
         return;
       }
 
-      if (result.length === 0) {
+      if (result.messages.length === 0) {
         this.log("No history found for this record.");
         return;
       }
 
-      this.log(`Found ${result.length} history entry(ies):\n`);
+      this.log(
+        `Found ${result.messages.length} message(s) · ${result.attempts} attempt(s) · last channel: ${result.lastChannel ?? "—"}\n`
+      );
 
-      for (const entry of result) {
-        this.log(`ID: ${entry.id}`);
-        this.log(`  Status: ${entry.status}`);
-        this.log(`  Agent: ${entry.agent}`);
-        this.log(`  Channel: ${entry.channel}`);
-        if (entry.aiNote) this.log(`  AI Note: ${entry.aiNote}`);
-        if (entry.humanNote) this.log(`  Human Note: ${entry.humanNote}`);
-        this.log(`  Created: ${new Date(entry.createdAt).toLocaleString()}`);
+      for (let i = 0; i < result.messages.length; i++) {
+        const msg = result.messages[i];
+        this.log(`[${i + 1}] ${msg.role}${msg.channel ? ` (${msg.channel})` : ""}`);
+        this.log(`  ${msg.content}`);
         this.log("");
       }
     } catch (e) {

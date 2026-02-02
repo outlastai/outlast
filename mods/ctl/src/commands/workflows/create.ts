@@ -49,7 +49,15 @@ export default class Create extends BaseCommand<typeof Create> {
           this.error(`Invalid workflow file:\n${formatZodErrors(parseResult.error)}`);
         }
 
-        workflowData = parseResult.data as CreateWorkflowRequest;
+        const fileData = parseResult.data;
+        workflowData = fileData as CreateWorkflowRequest;
+        // Persist graph structure when YAML has entrypoint + nodes
+        if (fileData.entrypoint && fileData.nodes) {
+          workflowData.graphDefinition = {
+            entrypoint: fileData.entrypoint,
+            nodes: fileData.nodes
+          };
+        }
       } catch (e) {
         if ((e as Error).name === "ExitPromptError") throw e;
         this.error(`Failed to read file: ${(e as Error).message}`);
