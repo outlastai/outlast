@@ -95,7 +95,6 @@ model Record {
 
   // Relations
   contact       Contact?    @relation(fields: [contactId], references: [id], onDelete: SetNull)
-  history       RecordHistory[]
   recordWorkflows RecordWorkflow[]
   items         Item[]
 
@@ -106,27 +105,6 @@ model Record {
   @@index([sourceSystem, sourceRecordId])
   @@index([workflowStatus])
   @@map("records")
-}
-
-// DEPRECATED: Conversation history will be stored in LangGraph checkpoints.
-// getRecordHistory API will query LangGraph instead. Kept for migration period.
-model RecordHistory {
-  id              String      @id @default(uuid())
-  recordId        String      @map("record_id")
-  status          RecordStatus @map("status")
-  aiNote          String?     @map("ai_note") @db.Text
-  humanNote       String?     @map("human_note") @db.Text
-  agent           String      @map("agent")
-  channel         Channel     @map("channel")
-  channelMetadata Json?       @map("channel_metadata")
-  createdAt       DateTime    @default(now()) @map("created_at")
-
-  // Relations
-  record          Record      @relation(fields: [recordId], references: [id], onDelete: Cascade)
-
-  @@index([recordId])
-  @@index([createdAt])
-  @@map("record_history")
 }
 
 model Contact {

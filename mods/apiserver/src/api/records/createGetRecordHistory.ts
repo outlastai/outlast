@@ -1,15 +1,13 @@
 /**
  * Copyright (C) 2026 by Outlast.
  *
- * Get record history: queries LangGraph checkpoints when checkpointer is provided,
- * otherwise falls back to deprecated RecordHistory table.
+ * Get record history: queries LangGraph checkpoints.
  */
 import {
   withErrorHandlingAndValidation,
   getRecordHistorySchema,
   type GetRecordHistoryInput,
-  type GetRecordHistoryResponse,
-  type DbClient
+  type GetRecordHistoryResponse
 } from "@outlast/common";
 import type { BaseCheckpointSaver } from "@langchain/langgraph-checkpoint";
 import { logger } from "../../logger.js";
@@ -64,60 +62,32 @@ function channelValuesToResponse(
 
 /**
  * Creates a function to get history for a specific record.
- * When checkpointer is provided, queries LangGraph checkpoints (recordId = thread_id).
- * Otherwise falls back to the deprecated RecordHistory table and maps to the same response shape.
+ * Queries LangGraph checkpoints where recordId = thread_id.
  *
- * @param client - The database client
- * @param checkpointer - Optional LangGraph checkpointer; when set, history is read from checkpoints
+ * @param checkpointer - LangGraph checkpointer for reading history from checkpoints
  * @returns A validated function that returns conversation history
  */
-export function createGetRecordHistory(client: DbClient, checkpointer?: BaseCheckpointSaver) {
+export function createGetRecordHistory(checkpointer: BaseCheckpointSaver) {
   const fn = async (params: GetRecordHistoryInput): Promise<GetRecordHistoryResponse> => {
     logger.verbose("getting record history", { recordId: params.recordId });
 
-    if (checkpointer) {
-      const tuple = await checkpointer.getTuple({
-        configurable: { thread_id: params.recordId }
-      });
-      if (tuple?.checkpoint?.channel_values) {
-        const response = channelValuesToResponse(
-          tuple.checkpoint.channel_values as Record<string, unknown>,
-          tuple.checkpoint.ts ?? new Date().toISOString()
-        );
-        logger.verbose("record history from LangGraph", { messageCount: response.messages.length });
-        return response;
-      }
-      logger.verbose("no LangGraph checkpoint for record", { recordId: params.recordId });
-      return {
-        messages: [],
-        attempts: 0,
-        lastChannel: null,
-        updatedAt: null
-      };
-    }
-
-    const history = await client.recordHistory.findMany({
-      where: { recordId: params.recordId },
-      skip: params.skip,
-      take: params.take,
-      orderBy: { createdAt: "desc" }
+    const tuple = await checkpointer.getTuple({
+      configurable: { thread_id: params.recordId }
     });
-
-    const messages = history.map((h) => ({
-      role: "assistant" as const,
-      content: h.aiNote ?? "",
-      channel: h.channel
-    }));
-    const lastChannel = history.length > 0 ? history[0].channel : null;
-    const updatedAt = history.length > 0 ? history[0].createdAt.toISOString() : null;
-
-    logger.verbose("record history from RecordHistory table", { count: history.length });
+    if (tuple?.checkpoint?.channel_values) {
+      const response = channelValuesToResponse(
+        tuple.checkpoint.channel_values as Record<string, unknown>,
+        tuple.checkpoint.ts ?? new Date().toISOString()
+      );
+      logger.verbose("record history from LangGraph", { messageCount: response.messages.length });
+      return response;
+    }
+    logger.verbose("no LangGraph checkpoint for record", { recordId: params.recordId });
     return {
-      messages,
-      attempts: history.length,
-      lastChannel,
-      workflowStatus: undefined,
-      updatedAt
+      messages: [],
+      attempts: 0,
+      lastChannel: null,
+      updatedAt: null
     };
   };
 

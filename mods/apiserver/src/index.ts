@@ -32,8 +32,6 @@ import { dummySendEmail, dummyInitiateCall } from "./services/dummy.js";
 import {
   createGetWorkflowWithRules,
   createGetRecordWithContact,
-  createGetRecordHistory,
-  createCreateRecordHistory,
   createUpdateRecordStatus,
   createListSchedulableWorkflows
 } from "./api/runner/index.js";
@@ -108,21 +106,18 @@ async function start() {
   // Create runner API functions (dependency injection)
   const getWorkflowWithRules = createGetWorkflowWithRules(prisma);
   const getRecordWithContact = createGetRecordWithContact(prisma);
-  const getRecordHistoryFromRunner = createGetRecordHistory(prisma);
-  const createRecordHistory = createCreateRecordHistory(prisma);
   const updateRecordStatus = createUpdateRecordStatus(prisma);
   const listSchedulableWorkflows = createListSchedulableWorkflows(prisma);
 
-  // Create workflow runner (getRecordHistory uses runner API; tRPC uses records API with checkpointer)
+  // Create workflow runner (history is stored in LangGraph checkpoints, not separate table)
   const workflowRunnerDeps = {
     getWorkflow: (id: string) => getWorkflowWithRules({ id }),
     listRecordsForWorkflow: (wfId: string, statuses: RecordStatus[], batch: number) =>
       listRecordsForWorkflow(prisma, wfId, statuses, batch),
     getRecord: (id: string) => getRecordWithContact({ id }),
-    getRecordHistory: (recordId: string, limit?: number) =>
-      getRecordHistoryFromRunner({ recordId, limit }),
-    createRecordHistory: (data: Parameters<typeof createRecordHistory>[0]) =>
-      createRecordHistory(data),
+    // History is now stored in LangGraph checkpoints - these stubs are for interface compatibility
+    getRecordHistory: async () => [],
+    createRecordHistory: async () => ({ id: "" }),
     updateRecordStatus: (id: string, status: string) => updateRecordStatus({ id, status }),
     sendEmail: dummySendEmail,
     initiateCall: dummyInitiateCall,

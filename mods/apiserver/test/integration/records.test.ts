@@ -3,11 +3,7 @@
  */
 import { expect } from "chai";
 import { TRPCError } from "@trpc/server";
-import {
-  createAuthenticatedCaller,
-  createUnauthenticatedCaller,
-  createMockRecordHistory
-} from "./setup.js";
+import { createAuthenticatedCaller, createUnauthenticatedCaller } from "./setup.js";
 
 const validCreateRecordInput = {
   title: "Test Record",
@@ -210,12 +206,19 @@ describe("Records API", () => {
 
   describe("getRecordHistory", () => {
     it("should get record history when authenticated", async () => {
-      const { caller, db } = createAuthenticatedCaller();
+      const { caller, checkpointer } = createAuthenticatedCaller();
       const created = await caller.createRecord(validCreateRecordInput);
 
-      // Add mock history (when no checkpointer, falls back to RecordHistory table)
-      db._addRecordHistory(created.id, createMockRecordHistory(created.id, { status: "OPEN" }));
-      db._addRecordHistory(created.id, createMockRecordHistory(created.id, { status: "DONE" }));
+      // Add mock history to the checkpointer
+      checkpointer._setHistory(created.id, {
+        messages: [
+          { role: "assistant", content: "First message" },
+          { role: "assistant", content: "Second message" }
+        ],
+        attempts: 2,
+        lastChannel: "EMAIL",
+        updatedAt: new Date().toISOString()
+      });
 
       const result = await caller.getRecordHistory({ recordId: created.id });
 

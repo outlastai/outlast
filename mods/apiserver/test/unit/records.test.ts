@@ -14,7 +14,7 @@ import {
 } from "../../src/api/records/index.js";
 import {
   createMockDbClient,
-  createMockRecordHistory,
+  createMockCheckpointer,
   type MockDbClient
 } from "../integration/setup.js";
 
@@ -27,10 +27,12 @@ const validCreateRecordInput = {
 
 describe("Records API Functions", () => {
   let mockDb: MockDbClient;
+  let mockCheckpointer: ReturnType<typeof createMockCheckpointer>;
   const workspaceId = "test-workspace";
 
   beforeEach(() => {
     mockDb = createMockDbClient();
+    mockCheckpointer = createMockCheckpointer();
   });
 
   describe("createCreateRecord", () => {
@@ -191,11 +193,18 @@ describe("Records API Functions", () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
       const created = await createRecord(validCreateRecordInput);
 
-      // Add some mock history
-      mockDb._addRecordHistory(created.id, createMockRecordHistory(created.id, { status: "OPEN" }));
-      mockDb._addRecordHistory(created.id, createMockRecordHistory(created.id, { status: "DONE" }));
+      // Add mock history to the checkpointer
+      mockCheckpointer._setHistory(created.id, {
+        messages: [
+          { role: "assistant", content: "First message" },
+          { role: "assistant", content: "Second message" }
+        ],
+        attempts: 2,
+        lastChannel: "EMAIL",
+        updatedAt: new Date().toISOString()
+      });
 
-      const getHistory = createGetRecordHistory(mockDb);
+      const getHistory = createGetRecordHistory(mockCheckpointer);
       const result = await getHistory({ recordId: created.id });
 
       expect(result).to.have.property("messages");
@@ -208,7 +217,7 @@ describe("Records API Functions", () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
       const created = await createRecord(validCreateRecordInput);
 
-      const getHistory = createGetRecordHistory(mockDb);
+      const getHistory = createGetRecordHistory(mockCheckpointer);
       const result = await getHistory({ recordId: created.id });
 
       expect(result).to.have.property("messages");
@@ -216,23 +225,23 @@ describe("Records API Functions", () => {
       expect(result.attempts).to.equal(0);
     });
 
-    it("should support pagination for history", async () => {
+    it("should get history with workflowStatus", async () => {
       const createRecord = createCreateRecord(mockDb, workspaceId);
       const created = await createRecord(validCreateRecordInput);
 
-      // Add multiple history entries
-      for (let i = 0; i < 5; i++) {
-        mockDb._addRecordHistory(
-          created.id,
-          createMockRecordHistory(created.id, { humanNote: `Note ${i}` })
-        );
-      }
+      // Add mock history with workflowStatus
+      mockCheckpointer._setHistory(created.id, {
+        messages: [{ role: "assistant", content: "Working on it" }],
+        attempts: 1,
+        lastChannel: "EMAIL",
+        workflowStatus: "RUNNING",
+        updatedAt: new Date().toISOString()
+      });
 
-      const getHistory = createGetRecordHistory(mockDb);
-      const result = await getHistory({ recordId: created.id, skip: 1, take: 2 });
+      const getHistory = createGetRecordHistory(mockCheckpointer);
+      const result = await getHistory({ recordId: created.id });
 
-      expect(result).to.have.property("messages");
-      expect(result.messages).to.have.length(2);
+      expect(result.workflowStatus).to.equal("RUNNING");
     });
   });
 });

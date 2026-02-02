@@ -30,36 +30,6 @@ export const getRecordWithContactSchema = z.object({
 export type GetRecordWithContactInput = z.infer<typeof getRecordWithContactSchema>;
 
 /**
- * Schema for getting record history.
- */
-export const getRecordHistorySchema = z.object({
-  recordId: z.uuid({ error: "Invalid record ID" }),
-  limit: z.number().int().min(1).max(100).optional()
-});
-
-/**
- * Input type for getting record history.
- */
-export type GetRecordHistoryInput = z.infer<typeof getRecordHistorySchema>;
-
-/**
- * Schema for creating a record history entry.
- */
-export const createRecordHistorySchema = z.object({
-  recordId: z.uuid({ error: "Invalid record ID" }),
-  status: z.string().min(1, "Status is required"),
-  aiNote: z.string().optional(),
-  agent: z.string().min(1, "Agent is required"),
-  channel: z.string().min(1, "Channel is required"),
-  channelMetadata: z.record(z.string(), z.unknown()).optional()
-});
-
-/**
- * Input type for creating record history.
- */
-export type CreateRecordHistoryInput = z.infer<typeof createRecordHistorySchema>;
-
-/**
  * Schema for updating record status.
  */
 export const updateRecordStatusSchema = z.object({

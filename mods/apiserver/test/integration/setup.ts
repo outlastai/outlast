@@ -10,17 +10,72 @@ import type {
   RecordEntity,
   Contact,
   Workflow,
-  RecordHistory,
   RecordCreateInput,
   RecordUpdateInput,
   ContactCreateInput,
   WorkflowCreateInput,
   WorkflowUpdateInput,
   RecordStatusValue,
-  RecordTypeValue
+  RecordTypeValue,
+  GetRecordHistoryResponse
 } from "@outlast/common";
+import type {
+  BaseCheckpointSaver,
+  Checkpoint,
+  CheckpointTuple
+} from "@langchain/langgraph-checkpoint";
 
 const TEST_WORKSPACE_ID = "test-workspace-id";
+
+/**
+ * Mock checkpointer for testing LangGraph history.
+ */
+export function createMockCheckpointer(): BaseCheckpointSaver & {
+  _setHistory: (recordId: string, response: GetRecordHistoryResponse) => void;
+} {
+  const store = new Map<string, GetRecordHistoryResponse>();
+
+  return {
+    async getTuple(config: {
+      configurable: { thread_id: string };
+    }): Promise<CheckpointTuple | undefined> {
+      const recordId = config.configurable.thread_id;
+      const response = store.get(recordId);
+      if (!response) return undefined;
+      return {
+        config: { configurable: { thread_id: recordId, checkpoint_ns: "", checkpoint_id: "test" } },
+        checkpoint: {
+          v: 1,
+          id: "test",
+          ts: response.updatedAt ?? new Date().toISOString(),
+          channel_values: {
+            messages: response.messages,
+            attempts: response.attempts,
+            lastChannel: response.lastChannel,
+            workflowStatus: response.workflowStatus
+          },
+          channel_versions: {},
+          versions_seen: {},
+          pending_sends: []
+        } as Checkpoint,
+        metadata: {},
+        parentConfig: undefined
+      };
+    },
+    async list() {
+      return (async function* () {})();
+    },
+    async put() {
+      return { configurable: { thread_id: "", checkpoint_ns: "", checkpoint_id: "" } };
+    },
+    async putWrites() {},
+    _setHistory(recordId: string, response: GetRecordHistoryResponse) {
+      store.set(recordId, response);
+    }
+  } as BaseCheckpointSaver & {
+    _setHistory: (recordId: string, response: GetRecordHistoryResponse) => void;
+  };
+}
 
 /**
  * Creates a mock database client for testing.
@@ -30,7 +85,6 @@ export function createMockDbClient() {
   const records: Map<string, RecordEntity> = new Map();
   const contacts: Map<string, Contact> = new Map();
   const workflows: Map<string, Workflow> = new Map();
-  const recordHistoryStore: Map<string, RecordHistory[]> = new Map();
 
   return {
     record: {
@@ -55,8 +109,6 @@ export function createMockDbClient() {
           rawData: args.data.rawData ?? null
         };
         records.set(id, record);
-        // Initialize empty history for this record
-        recordHistoryStore.set(id, []);
         return record;
       },
       findMany: async (args?: {
@@ -106,7 +158,6 @@ export function createMockDbClient() {
         const record = records.get(args.where.id);
         if (!record) throw new Error("Record not found");
         records.delete(args.where.id);
-        recordHistoryStore.delete(args.where.id);
         return record;
       }
     },
@@ -215,41 +266,11 @@ export function createMockDbClient() {
       }
     },
 
-    recordHistory: {
-      findMany: async (args?: {
-        skip?: number;
-        take?: number;
-        where?: { recordId?: string };
-        orderBy?: { createdAt: "asc" | "desc" };
-      }): Promise<RecordHistory[]> => {
-        if (!args?.where?.recordId) {
-          return [];
-        }
-        let history = recordHistoryStore.get(args.where.recordId) || [];
-        if (args?.orderBy?.createdAt === "desc") {
-          history = [...history].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-        } else if (args?.orderBy?.createdAt === "asc") {
-          history = [...history].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-        }
-        const skip = args?.skip || 0;
-        const take = args?.take || history.length;
-        return history.slice(skip, skip + take);
-      }
-    },
-
     // Helper to clear all data between tests
     _clearAll: () => {
       records.clear();
       contacts.clear();
       workflows.clear();
-      recordHistoryStore.clear();
-    },
-
-    // Helper to add record history for testing
-    _addRecordHistory: (recordId: string, history: RecordHistory) => {
-      const existing = recordHistoryStore.get(recordId) || [];
-      existing.push(history);
-      recordHistoryStore.set(recordId, existing);
     }
   };
 }
@@ -259,18 +280,21 @@ export type MockDbClient = ReturnType<typeof createMockDbClient>;
 /**
  * Creates an authenticated tRPC caller for testing protected procedures.
  *
- * @returns A tRPC caller with isAuthenticated: true and accessKeyId set
+ * @returns A tRPC caller with isAuthenticated: true, accessKeyId set, and mock checkpointer
  */
 export function createAuthenticatedCaller() {
   const mockDb = createMockDbClient();
+  const mockCheckpointer = createMockCheckpointer();
   const ctx: Context = {
     db: mockDb,
     isAuthenticated: true,
-    accessKeyId: TEST_WORKSPACE_ID
+    accessKeyId: TEST_WORKSPACE_ID,
+    checkpointer: mockCheckpointer
   };
   return {
     caller: appRouter.createCaller(ctx),
-    db: mockDb
+    db: mockDb,
+    checkpointer: mockCheckpointer
   };
 }
 
@@ -281,33 +305,15 @@ export function createAuthenticatedCaller() {
  */
 export function createUnauthenticatedCaller() {
   const mockDb = createMockDbClient();
+  const mockCheckpointer = createMockCheckpointer();
   const ctx: Context = {
     db: mockDb,
-    isAuthenticated: false
+    isAuthenticated: false,
+    checkpointer: mockCheckpointer
   };
   return {
     caller: appRouter.createCaller(ctx),
-    db: mockDb
-  };
-}
-
-/**
- * Creates a mock RecordHistory entry for testing.
- */
-export function createMockRecordHistory(
-  recordId: string,
-  overrides: Partial<RecordHistory> = {}
-): RecordHistory {
-  return {
-    id: crypto.randomUUID(),
-    recordId,
-    status: "OPEN",
-    aiNote: null,
-    humanNote: null,
-    agent: "test-agent",
-    channel: "EMAIL",
-    channelMetadata: null,
-    createdAt: new Date(),
-    ...overrides
+    db: mockDb,
+    checkpointer: mockCheckpointer
   };
 }

@@ -14,16 +14,6 @@ export interface SchedulableWorkflow {
   schedule: string | null;
 }
 
-/**
- * Record history entry.
- */
-export interface RecordHistoryEntry {
-  id: string;
-  channel: string;
-  createdAt: Date;
-  aiNote: string | null;
-}
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Database client interface for runner operations.
@@ -38,10 +28,6 @@ export interface RunnerDbClient {
   record: {
     findUnique: (args: any) => Promise<any>;
     update: (args: any) => Promise<any>;
-  };
-  recordHistory: {
-    findMany: (args: any) => Promise<any[]>;
-    create: (args: any) => Promise<any>;
   };
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

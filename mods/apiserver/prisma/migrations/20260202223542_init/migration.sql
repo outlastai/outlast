@@ -45,21 +45,6 @@ CREATE TABLE "records" (
 );
 
 -- CreateTable
-CREATE TABLE "record_history" (
-    "id" TEXT NOT NULL,
-    "record_id" TEXT NOT NULL,
-    "status" "RecordStatus" NOT NULL,
-    "ai_note" TEXT,
-    "human_note" TEXT,
-    "agent" TEXT NOT NULL,
-    "channel" "Channel" NOT NULL,
-    "channel_metadata" JSONB,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "record_history_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "contacts" (
     "id" TEXT NOT NULL,
     "workspace_id" TEXT NOT NULL,
@@ -154,12 +139,6 @@ CREATE INDEX "records_source_system_source_record_id_idx" ON "records"("source_s
 CREATE INDEX "records_workflow_status_idx" ON "records"("workflow_status");
 
 -- CreateIndex
-CREATE INDEX "record_history_record_id_idx" ON "record_history"("record_id");
-
--- CreateIndex
-CREATE INDEX "record_history_created_at_idx" ON "record_history"("created_at");
-
--- CreateIndex
 CREATE INDEX "contacts_workspace_id_idx" ON "contacts"("workspace_id");
 
 -- CreateIndex
@@ -191,9 +170,6 @@ CREATE INDEX "items_status_idx" ON "items"("status");
 
 -- AddForeignKey
 ALTER TABLE "records" ADD CONSTRAINT "records_contact_id_fkey" FOREIGN KEY ("contact_id") REFERENCES "contacts"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "record_history" ADD CONSTRAINT "record_history_record_id_fkey" FOREIGN KEY ("record_id") REFERENCES "records"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "workflow_scheduler_rules" ADD CONSTRAINT "workflow_scheduler_rules_workflow_id_fkey" FOREIGN KEY ("workflow_id") REFERENCES "workflows"("id") ON DELETE CASCADE ON UPDATE CASCADE;

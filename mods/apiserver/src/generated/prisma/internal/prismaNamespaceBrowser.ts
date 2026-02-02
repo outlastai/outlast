@@ -52,7 +52,6 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Record: 'Record',
-  RecordHistory: 'RecordHistory',
   Contact: 'Contact',
   Workflow: 'Workflow',
   WorkflowSchedulerRules: 'WorkflowSchedulerRules',
@@ -96,21 +95,6 @@ export const RecordScalarFieldEnum = {
 } as const
 
 export type RecordScalarFieldEnum = (typeof RecordScalarFieldEnum)[keyof typeof RecordScalarFieldEnum]
-
-
-export const RecordHistoryScalarFieldEnum = {
-  id: 'id',
-  recordId: 'recordId',
-  status: 'status',
-  aiNote: 'aiNote',
-  humanNote: 'humanNote',
-  agent: 'agent',
-  channel: 'channel',
-  channelMetadata: 'channelMetadata',
-  createdAt: 'createdAt'
-} as const
-
-export type RecordHistoryScalarFieldEnum = (typeof RecordHistoryScalarFieldEnum)[keyof typeof RecordHistoryScalarFieldEnum]
 
 
 export const ContactScalarFieldEnum = {

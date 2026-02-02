@@ -102,12 +102,18 @@ export const protectedRouter = router({
   }),
 
   /**
-   * Get history for a specific record (LangGraph checkpoints when checkpointer is set).
+   * Get history for a specific record (from LangGraph checkpoints).
    */
   getRecordHistory: protectedProcedure
     .input(getRecordHistorySchema)
     .query(async ({ ctx, input }) => {
-      const fn = createGetRecordHistory(ctx.db, ctx.checkpointer);
+      if (!ctx.checkpointer) {
+        throw new TRPCError({
+          code: "PRECONDITION_FAILED",
+          message: "LangGraph checkpointer not configured"
+        });
+      }
+      const fn = createGetRecordHistory(ctx.checkpointer);
       return fn(input);
     }),
 

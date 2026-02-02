@@ -399,6 +399,10 @@ export type ContactUpdateOneWithoutRecordsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ContactUpdateToOneWithWhereWithoutRecordsInput, Prisma.ContactUpdateWithoutRecordsInput>, Prisma.ContactUncheckedUpdateWithoutRecordsInput>
 }
 
+export type EnumChannelFieldUpdateOperationsInput = {
+  set?: $Enums.Channel
+}
+
 export type ContactCreateWithoutRecordsInput = {
   id?: string
   workspaceId: string

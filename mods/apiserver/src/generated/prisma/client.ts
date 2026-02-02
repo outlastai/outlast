@@ -45,11 +45,6 @@ export { Prisma }
  */
 export type Record = Prisma.RecordModel
 /**
- * Model RecordHistory
- * 
- */
-export type RecordHistory = Prisma.RecordHistoryModel
-/**
  * Model Contact
  * 
  */

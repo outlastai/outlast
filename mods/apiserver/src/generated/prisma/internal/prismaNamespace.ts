@@ -385,7 +385,6 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   Record: 'Record',
-  RecordHistory: 'RecordHistory',
   Contact: 'Contact',
   Workflow: 'Workflow',
   WorkflowSchedulerRules: 'WorkflowSchedulerRules',
@@ -406,7 +405,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "record" | "recordHistory" | "contact" | "workflow" | "workflowSchedulerRules" | "recordWorkflow" | "item"
+    modelProps: "record" | "contact" | "workflow" | "workflowSchedulerRules" | "recordWorkflow" | "item"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -481,80 +480,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.RecordCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.RecordCountAggregateOutputType> | number
-        }
-      }
-    }
-    RecordHistory: {
-      payload: Prisma.$RecordHistoryPayload<ExtArgs>
-      fields: Prisma.RecordHistoryFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.RecordHistoryFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.RecordHistoryFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload>
-        }
-        findFirst: {
-          args: Prisma.RecordHistoryFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.RecordHistoryFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload>
-        }
-        findMany: {
-          args: Prisma.RecordHistoryFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload>[]
-        }
-        create: {
-          args: Prisma.RecordHistoryCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload>
-        }
-        createMany: {
-          args: Prisma.RecordHistoryCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.RecordHistoryCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload>[]
-        }
-        delete: {
-          args: Prisma.RecordHistoryDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload>
-        }
-        update: {
-          args: Prisma.RecordHistoryUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload>
-        }
-        deleteMany: {
-          args: Prisma.RecordHistoryDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.RecordHistoryUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.RecordHistoryUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload>[]
-        }
-        upsert: {
-          args: Prisma.RecordHistoryUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecordHistoryPayload>
-        }
-        aggregate: {
-          args: Prisma.RecordHistoryAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateRecordHistory>
-        }
-        groupBy: {
-          args: Prisma.RecordHistoryGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.RecordHistoryGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.RecordHistoryCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.RecordHistoryCountAggregateOutputType> | number
         }
       }
     }
@@ -989,21 +914,6 @@ export const RecordScalarFieldEnum = {
 export type RecordScalarFieldEnum = (typeof RecordScalarFieldEnum)[keyof typeof RecordScalarFieldEnum]
 
 
-export const RecordHistoryScalarFieldEnum = {
-  id: 'id',
-  recordId: 'recordId',
-  status: 'status',
-  aiNote: 'aiNote',
-  humanNote: 'humanNote',
-  agent: 'agent',
-  channel: 'channel',
-  channelMetadata: 'channelMetadata',
-  createdAt: 'createdAt'
-} as const
-
-export type RecordHistoryScalarFieldEnum = (typeof RecordHistoryScalarFieldEnum)[keyof typeof RecordHistoryScalarFieldEnum]
-
-
 export const ContactScalarFieldEnum = {
   id: 'id',
   workspaceId: 'workspaceId',
@@ -1411,7 +1321,6 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   record?: Prisma.RecordOmit
-  recordHistory?: Prisma.RecordHistoryOmit
   contact?: Prisma.ContactOmit
   workflow?: Prisma.WorkflowOmit
   workflowSchedulerRules?: Prisma.WorkflowSchedulerRulesOmit
