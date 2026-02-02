@@ -9,6 +9,7 @@ const STORAGE_KEY = "outlast_access_token";
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
+  client: Client;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
 }
@@ -43,9 +44,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const token = localStorage.getItem(STORAGE_KEY);
     if (token) {
       setIsAuthenticated(true);
+      (client as unknown as { accessToken?: string }).accessToken = token;
     }
     setIsLoading(false);
-  }, []);
+  }, [client]);
 
   const login = async (username: string, password: string) => {
     const response = await client.login(username, password);
@@ -61,6 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value: AuthContextType = {
     isAuthenticated,
     isLoading,
+    client,
     login,
     logout
   };
