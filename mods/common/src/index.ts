@@ -101,6 +101,10 @@ export type {
   WorkflowUpdateInput,
   // RecordHistory types
   RecordHistory,
+  // WorkflowRun types (LangGraph)
+  WorkflowRun,
+  WorkflowRunCreateInput,
+  WorkflowRunStatusValue,
   // Database client
   DbClient
 } from "./types/index.js";

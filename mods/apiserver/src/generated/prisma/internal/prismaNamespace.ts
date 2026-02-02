@@ -390,7 +390,9 @@ export const ModelName = {
   Workflow: 'Workflow',
   WorkflowSchedulerRules: 'WorkflowSchedulerRules',
   RecordWorkflow: 'RecordWorkflow',
-  Item: 'Item'
+  Item: 'Item',
+  WorkflowRun: 'WorkflowRun',
+  CallRefMapping: 'CallRefMapping'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -406,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "record" | "recordHistory" | "contact" | "workflow" | "workflowSchedulerRules" | "recordWorkflow" | "item"
+    modelProps: "record" | "recordHistory" | "contact" | "workflow" | "workflowSchedulerRules" | "recordWorkflow" | "item" | "workflowRun" | "callRefMapping"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -928,6 +930,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WorkflowRun: {
+      payload: Prisma.$WorkflowRunPayload<ExtArgs>
+      fields: Prisma.WorkflowRunFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WorkflowRunFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WorkflowRunFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload>
+        }
+        findFirst: {
+          args: Prisma.WorkflowRunFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WorkflowRunFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload>
+        }
+        findMany: {
+          args: Prisma.WorkflowRunFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload>[]
+        }
+        create: {
+          args: Prisma.WorkflowRunCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload>
+        }
+        createMany: {
+          args: Prisma.WorkflowRunCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WorkflowRunCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload>[]
+        }
+        delete: {
+          args: Prisma.WorkflowRunDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload>
+        }
+        update: {
+          args: Prisma.WorkflowRunUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload>
+        }
+        deleteMany: {
+          args: Prisma.WorkflowRunDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WorkflowRunUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WorkflowRunUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload>[]
+        }
+        upsert: {
+          args: Prisma.WorkflowRunUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WorkflowRunPayload>
+        }
+        aggregate: {
+          args: Prisma.WorkflowRunAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWorkflowRun>
+        }
+        groupBy: {
+          args: Prisma.WorkflowRunGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkflowRunGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WorkflowRunCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WorkflowRunCountAggregateOutputType> | number
+        }
+      }
+    }
+    CallRefMapping: {
+      payload: Prisma.$CallRefMappingPayload<ExtArgs>
+      fields: Prisma.CallRefMappingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CallRefMappingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CallRefMappingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload>
+        }
+        findFirst: {
+          args: Prisma.CallRefMappingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CallRefMappingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload>
+        }
+        findMany: {
+          args: Prisma.CallRefMappingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload>[]
+        }
+        create: {
+          args: Prisma.CallRefMappingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload>
+        }
+        createMany: {
+          args: Prisma.CallRefMappingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CallRefMappingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload>[]
+        }
+        delete: {
+          args: Prisma.CallRefMappingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload>
+        }
+        update: {
+          args: Prisma.CallRefMappingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload>
+        }
+        deleteMany: {
+          args: Prisma.CallRefMappingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CallRefMappingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CallRefMappingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload>[]
+        }
+        upsert: {
+          args: Prisma.CallRefMappingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallRefMappingPayload>
+        }
+        aggregate: {
+          args: Prisma.CallRefMappingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCallRefMapping>
+        }
+        groupBy: {
+          args: Prisma.CallRefMappingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CallRefMappingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CallRefMappingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CallRefMappingCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1076,6 +1226,33 @@ export const ItemScalarFieldEnum = {
 } as const
 
 export type ItemScalarFieldEnum = (typeof ItemScalarFieldEnum)[keyof typeof ItemScalarFieldEnum]
+
+
+export const WorkflowRunScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  recordId: 'recordId',
+  configName: 'configName',
+  threadId: 'threadId',
+  status: 'status',
+  initialData: 'initialData',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type WorkflowRunScalarFieldEnum = (typeof WorkflowRunScalarFieldEnum)[keyof typeof WorkflowRunScalarFieldEnum]
+
+
+export const CallRefMappingScalarFieldEnum = {
+  callRef: 'callRef',
+  threadId: 'threadId',
+  workflowRunId: 'workflowRunId',
+  createdAt: 'createdAt'
+} as const
+
+export type CallRefMappingScalarFieldEnum = (typeof CallRefMappingScalarFieldEnum)[keyof typeof CallRefMappingScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1299,6 +1476,20 @@ export type EnumItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Prism
 export type ListEnumItemStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemStatus[]'>
     
 
+
+/**
+ * Reference to a field of type 'WorkflowRunStatus'
+ */
+export type EnumWorkflowRunStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkflowRunStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'WorkflowRunStatus[]'
+ */
+export type ListEnumWorkflowRunStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'WorkflowRunStatus[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -1401,6 +1592,8 @@ export type GlobalOmitConfig = {
   workflowSchedulerRules?: Prisma.WorkflowSchedulerRulesOmit
   recordWorkflow?: Prisma.RecordWorkflowOmit
   item?: Prisma.ItemOmit
+  workflowRun?: Prisma.WorkflowRunOmit
+  callRefMapping?: Prisma.CallRefMappingOmit
 }
 
 /* Types for Logging */

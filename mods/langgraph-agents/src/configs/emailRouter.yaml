@@ -1,0 +1,55 @@
+# Email Router Workflow
+#
+# Advanced workflow with conditional routing based on call outcome.
+# Routes to email on success, escalation on failure.
+
+name: emailRouter
+description: Route based on call outcome - email on success, escalate on failure
+
+# Nodes to include (must exist in NODE_REGISTRY)
+nodes:
+  - name: call
+    type: makePhoneCall
+  - name: wait
+    type: waitFonoster
+  - name: email
+    type: sendEmail
+  - name: escalate
+    type: escalate
+  - name: finish
+    type: finishRecord
+
+# Edges define the flow
+edges:
+  # Initiate the call
+  - from: call
+    to: wait
+  
+  # Conditional routing based on call status
+  # The callStatusRouter examines state.callStatus and returns a route key
+  - from: wait
+    type: conditional
+    router: callStatusRouter
+    routes:
+      completed: email      # Call answered with conversation -> send email
+      failed: escalate      # Call failed -> escalate
+      noAnswer: escalate    # No answer -> escalate
+  
+  # After email, finish the record
+  - from: email
+    to: finish
+  
+  # After escalation, finish the record
+  - from: escalate
+    to: finish
+  
+  # End the workflow
+  - from: finish
+    to: END
+
+# Entry point - where the workflow starts
+entryPoint: call
+
+# Pause before these nodes (for async waiting)
+interruptBefore:
+  - wait

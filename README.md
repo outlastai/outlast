@@ -15,7 +15,6 @@ Outlast is an AI-powered workflow automation platform for managing records, cont
 First, clone the repository and install dependencies to get all the workspace packages ready:
 
 ```bash
-git clone https://github.com/fonoster/outlast.git
 cd outlast
 npm install
 ```
@@ -35,6 +34,12 @@ npx @47ng/cloak generate
 Copy the generated key to `OUTLAST_IDENTITY_CLOAK_ENCRYPTION_KEY` in your `.env` file.
 
 In `.env`, set `OUTLAST_IDENTITY_DATABASE_URL` to a dedicated Postgres database for identity (e.g. `postgresql://postgres:postgres@localhost:5432/outlast_identity`). This is separate from the main app database.
+
+Also set your OpenAI API key:
+
+```
+OUTLAST_OPENAI_API_KEY=sk-your-openai-api-key
+```
 
 Now, build the identity module and generate RSA keys for signing and verifying authentication tokens:
 
@@ -88,6 +93,26 @@ npm run start:dashboard # Coming soon
 ```
 
 The API server runs at `http://localhost:3000` and the dashboard at `http://localhost:5173`.
+
+### Running LangGraph Workflows (Optional)
+
+LangGraph provides config-driven workflow execution with support for async interrupts (e.g., waiting for phone call callbacks). To run LangGraph workflows:
+
+1. Start the workflow runner (polls for pending workflows):
+
+```bash
+cd mods/langgraph-agents
+npm run start:runner
+```
+
+2. In another terminal, start the webhook handler (receives Fonoster callbacks):
+
+```bash
+cd mods/langgraph-agents
+npm run start:webhook
+```
+
+The runner polls the database for pending workflow runs and executes them. The webhook server listens on port 8001 for external callbacks (e.g., when a phone call completes).
 
 ## API Overview
 
@@ -147,6 +172,9 @@ curl -X POST 'http://localhost:3000/trpc/createRecord' \
 | `deleteWorkflow`               | mutation | Delete a workflow                 |
 | `listWorkflows`                | query    | List workflows                    |
 | `getWorkflow`                  | query    | Get a workflow by ID              |
+| `scheduleWorkflowRun`          | mutation | Schedule a LangGraph workflow run |
+| `getWorkflowRun`               | query    | Get a workflow run by ID          |
+| `listWorkflowRuns`             | query    | List workflow runs with filtering |
 
 For queries, use the procedure name as a URL parameter: `GET /trpc/listRecords?input={}`.
 
@@ -231,6 +259,90 @@ Finally, verify the workflow was created and is ready to run:
 
 ```bash
 ol workflows:list
+```
+
+## LangGraph Workflow Configs
+
+LangGraph workflows are config-driven state machines defined in YAML. They support async interrupts for external operations like phone calls.
+
+### Example Config
+
+```yaml
+# mods/langgraph-agents/src/configs/emailRouter.yaml
+name: emailRouter
+description: Route based on call outcome - email on success, escalate on failure
+
+nodes:
+  - name: call
+    type: makePhoneCall
+  - name: wait
+    type: waitFonoster
+  - name: email
+    type: sendEmail
+  - name: escalate
+    type: escalate
+  - name: finish
+    type: finishRecord
+
+edges:
+  - from: call
+    to: wait
+  - from: wait
+    type: conditional
+    router: callStatusRouter
+    routes:
+      completed: email
+      failed: escalate
+      noAnswer: escalate
+  - from: email
+    to: finish
+  - from: escalate
+    to: finish
+  - from: finish
+    to: END
+
+entryPoint: call
+
+interruptBefore:
+  - wait # Pause here to wait for Fonoster callback
+```
+
+### Available Node Types
+
+| Node Type       | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `makePhoneCall` | Initiates a phone call via Fonoster/Voice API   |
+| `waitFonoster`  | Validates call data after webhook resumes flow  |
+| `sendEmail`     | Sends follow-up email based on call outcome     |
+| `escalate`      | Escalates record for human review               |
+| `finishRecord`  | Updates record status and creates history entry |
+
+### Available Routers
+
+| Router                | Description                                              |
+| --------------------- | -------------------------------------------------------- |
+| `callStatusRouter`    | Routes based on call outcome (completed/failed/noAnswer) |
+| `emailRequiredRouter` | Routes based on whether email should be sent             |
+| `escalationRouter`    | Routes based on error count or call failure              |
+
+### Scheduling a LangGraph Workflow Run
+
+Use the SDK or API to schedule a workflow run for a record:
+
+```javascript
+const workflowRuns = new SDK.WorkflowRuns(client);
+
+const run = await workflowRuns.scheduleWorkflowRun({
+  recordId: "record-uuid",
+  configName: "emailRouter", // matches filename in configs/
+  initialData: {
+    phoneNumber: "+15551234567",
+    contactEmail: "customer@example.com",
+    jobDescription: "Follow up on invoice"
+  }
+});
+
+console.log("Scheduled:", run.id, run.threadId);
 ```
 
 ## Creating a Record

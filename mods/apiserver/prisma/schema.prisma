@@ -63,6 +63,14 @@ enum ItemStatus {
   CANCELLED
 }
 
+enum WorkflowRunStatus {
+  PENDING
+  RUNNING
+  INTERRUPTED
+  COMPLETED
+  FAILED
+}
+
 // =============================================================================
 // Models
 // =============================================================================
@@ -89,6 +97,7 @@ model Record {
   history       RecordHistory[]
   recordWorkflows RecordWorkflow[]
   items         Item[]
+  workflowRuns  WorkflowRun[]
 
   @@index([workspaceId])
   @@index([type])
@@ -218,4 +227,100 @@ model Item {
   @@index([recordId])
   @@index([status])
   @@map("items")
+}
+
+// =============================================================================
+// LangGraph Workflow Runs (separate from existing LLM workflows)
+// =============================================================================
+
+model WorkflowRun {
+  id            String            @id @default(uuid())
+  workspaceId   String            @map("workspace_id")
+  recordId      String            @map("record_id")
+  configName    String            @map("config_name")
+  threadId      String            @default(uuid()) @map("thread_id")
+  status        WorkflowRunStatus @default(PENDING)
+  initialData   Json?             @map("initial_data")
+  errorMessage  String?           @map("error_message") @db.Text
+  createdAt     DateTime          @default(now()) @map("created_at")
+  startedAt     DateTime?         @map("started_at")
+  completedAt   DateTime?         @map("completed_at")
+
+  // Relations
+  record        Record            @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  callRefMappings CallRefMapping[]
+
+  @@index([workspaceId])
+  @@index([status])
+  @@index([recordId])
+  @@index([threadId])
+  @@map("workflow_runs")
+}
+
+model CallRefMapping {
+  callRef       String      @id @map("call_ref")
+  threadId      String      @map("thread_id")
+  workflowRunId String      @map("workflow_run_id")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  workflowRun   WorkflowRun @relation(fields: [workflowRunId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+  @@map("call_ref_mapping")
+}
+
+// =============================================================================
+// LangGraph Checkpoint Tables (managed by @langchain/langgraph-checkpoint-postgres)
+// These tables are created/managed by LangGraph but declared here to prevent
+// Prisma drift detection warnings.
+// =============================================================================
+
+model Checkpoint {
+  threadId   String   @map("thread_id")
+  checkpoint String   @db.Text
+  metadata   String?  @db.Text
+  parentId   String?  @map("parent_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@id([threadId])
+  @@map("checkpoints")
+  @@ignore
+}
+
+model CheckpointBlob {
+  threadId  String   @map("thread_id")
+  channel   String
+  version   String
+  type      String
+  blob      Bytes?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@id([threadId, channel, version])
+  @@map("checkpoint_blobs")
+  @@ignore
+}
+
+model CheckpointWrite {
+  threadId      String   @map("thread_id")
+  checkpointNs  String   @map("checkpoint_ns")
+  checkpointId  String   @map("checkpoint_id")
+  taskId        String   @map("task_id")
+  idx           Int
+  channel       String
+  type          String?
+  blob          Bytes?
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@id([threadId, checkpointNs, checkpointId, taskId, idx])
+  @@map("checkpoint_writes")
+  @@ignore
+}
+
+model CheckpointMigration {
+  version   Int      @id
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("checkpoint_migrations")
+  @@ignore
 }

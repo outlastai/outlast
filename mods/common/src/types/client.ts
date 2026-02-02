@@ -196,6 +196,39 @@ export interface RecordHistory {
 }
 
 // =============================================================================
+// WorkflowRun Types (LangGraph)
+// =============================================================================
+
+export type WorkflowRunStatusValue = "PENDING" | "RUNNING" | "INTERRUPTED" | "COMPLETED" | "FAILED";
+
+/**
+ * WorkflowRun entity type matching the Prisma model.
+ */
+export interface WorkflowRun {
+  id: string;
+  workspaceId: string;
+  recordId: string;
+  configName: string;
+  threadId: string;
+  status: WorkflowRunStatusValue;
+  initialData: JsonObject | null;
+  errorMessage: string | null;
+  createdAt: Date;
+  startedAt: Date | null;
+  completedAt: Date | null;
+}
+
+/**
+ * WorkflowRun create input type.
+ */
+export interface WorkflowRunCreateInput {
+  workspaceId: string;
+  recordId: string;
+  configName: string;
+  initialData?: JsonObject | null;
+}
+
+// =============================================================================
 // Database Client Interface
 // =============================================================================
 
@@ -212,7 +245,7 @@ export interface DbClient {
       where?: { workspaceId?: string; status?: RecordStatusValue; type?: RecordTypeValue };
     }) => Promise<RecordEntity[]>;
     findFirst: (args: {
-      where: { workspaceId: string; sourceRecordId: string };
+      where: { workspaceId?: string; sourceRecordId?: string; id?: string };
     }) => Promise<RecordEntity | null>;
     findUnique: (args: { where: { id: string } }) => Promise<RecordEntity | null>;
     update: (args: { where: { id: string }; data: RecordUpdateInput }) => Promise<RecordEntity>;
@@ -252,5 +285,17 @@ export interface DbClient {
       where?: { recordId?: string };
       orderBy?: { createdAt: "asc" | "desc" };
     }) => Promise<RecordHistory[]>;
+  };
+  workflowRun: {
+    create: (args: { data: WorkflowRunCreateInput }) => Promise<WorkflowRun>;
+    findMany: (args?: {
+      skip?: number;
+      take?: number;
+      where?: { workspaceId?: string; recordId?: string; status?: WorkflowRunStatusValue };
+      orderBy?: { createdAt: "asc" | "desc" };
+    }) => Promise<WorkflowRun[]>;
+    findFirst: (args: {
+      where: { id?: string; workspaceId?: string };
+    }) => Promise<WorkflowRun | null>;
   };
 }

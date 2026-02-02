@@ -1,0 +1,45 @@
+# Phone Follow-up Workflow
+# 
+# Simple workflow: Make a phone call, wait for completion, send follow-up email.
+# No conditional routing - always sends email after call.
+
+name: phoneFollowup
+description: Make a phone call, wait for completion, send follow-up email
+
+# Nodes to include (must exist in NODE_REGISTRY)
+nodes:
+  - name: call
+    type: makePhoneCall
+  - name: wait
+    type: waitFonoster
+  - name: email
+    type: sendEmail
+  - name: finish
+    type: finishRecord
+
+# Edges define the flow
+edges:
+  # Initiate the call
+  - from: call
+    to: wait
+  
+  # After call completes, send email
+  - from: wait
+    to: email
+  
+  # Finish and update record
+  - from: email
+    to: finish
+  
+  # End the workflow
+  - from: finish
+    to: END
+
+# Entry point - where the workflow starts
+entryPoint: call
+
+# Pause before these nodes (for async waiting)
+# The workflow will interrupt before 'wait', saving state.
+# When the Fonoster webhook arrives, it resumes from here.
+interruptBefore:
+  - wait

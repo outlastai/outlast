@@ -57,7 +57,9 @@ export const ModelName = {
   Workflow: 'Workflow',
   WorkflowSchedulerRules: 'WorkflowSchedulerRules',
   RecordWorkflow: 'RecordWorkflow',
-  Item: 'Item'
+  Item: 'Item',
+  WorkflowRun: 'WorkflowRun',
+  CallRefMapping: 'CallRefMapping'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -185,6 +187,33 @@ export const ItemScalarFieldEnum = {
 } as const
 
 export type ItemScalarFieldEnum = (typeof ItemScalarFieldEnum)[keyof typeof ItemScalarFieldEnum]
+
+
+export const WorkflowRunScalarFieldEnum = {
+  id: 'id',
+  workspaceId: 'workspaceId',
+  recordId: 'recordId',
+  configName: 'configName',
+  threadId: 'threadId',
+  status: 'status',
+  initialData: 'initialData',
+  errorMessage: 'errorMessage',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt'
+} as const
+
+export type WorkflowRunScalarFieldEnum = (typeof WorkflowRunScalarFieldEnum)[keyof typeof WorkflowRunScalarFieldEnum]
+
+
+export const CallRefMappingScalarFieldEnum = {
+  callRef: 'callRef',
+  threadId: 'threadId',
+  workflowRunId: 'workflowRunId',
+  createdAt: 'createdAt'
+} as const
+
+export type CallRefMappingScalarFieldEnum = (typeof CallRefMappingScalarFieldEnum)[keyof typeof CallRefMappingScalarFieldEnum]
 
 
 export const SortOrder = {

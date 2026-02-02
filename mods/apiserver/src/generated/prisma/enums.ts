@@ -80,3 +80,14 @@ export const ItemStatus = {
 } as const
 
 export type ItemStatus = (typeof ItemStatus)[keyof typeof ItemStatus]
+
+
+export const WorkflowRunStatus = {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  INTERRUPTED: 'INTERRUPTED',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type WorkflowRunStatus = (typeof WorkflowRunStatus)[keyof typeof WorkflowRunStatus]

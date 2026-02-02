@@ -11,6 +11,7 @@ export type {
   PriorityLevelValue,
   SourceSystemValue,
   ChannelValue,
+  WorkflowRunStatusValue,
   // Record types
   RecordEntity,
   Record,
@@ -25,6 +26,9 @@ export type {
   WorkflowUpdateInput,
   // RecordHistory types
   RecordHistory,
+  // WorkflowRun types (LangGraph)
+  WorkflowRun,
+  WorkflowRunCreateInput,
   // Database client
   DbClient
 } from "./client.js";

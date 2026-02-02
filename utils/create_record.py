@@ -171,6 +171,138 @@ class OutlastClient:
 
         return response.json()["result"]["data"]
 
+    def schedule_workflow_run(
+        self,
+        record_id: str,
+        config_name: str,
+        initial_data: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Schedule a LangGraph workflow run for a record.
+
+        This schedules a workflow to be executed by the LangGraph runner.
+        The workflow will be picked up and executed asynchronously.
+
+        Args:
+            record_id: UUID of the record to process
+            config_name: Name of the workflow config (e.g., "emailRouter", "phoneFollowup")
+            initial_data: Initial data for the workflow (phoneNumber, contactEmail, etc.)
+
+        Returns:
+            The created workflow run with id, threadId, configName, and status
+
+        Raises:
+            requests.HTTPError: If the API request fails
+        """
+        if not self.access_token:
+            self.authenticate()
+
+        url = f"{self.base_url}/trpc/scheduleWorkflowRun"
+
+        payload: Dict[str, Any] = {
+            "recordId": record_id,
+            "configName": config_name,
+        }
+        if initial_data:
+            payload["initialData"] = initial_data
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.access_token}",
+            "x-access-key-id": self.access_key_id,
+        }
+
+        try:
+            response = requests.post(url, json=payload, headers=headers)
+            response.raise_for_status()
+        except requests.HTTPError as e:
+            try:
+                error_data = response.json()
+                error_msg = f"Schedule workflow run failed: {error_data}"
+            except:
+                error_msg = f"Schedule workflow run failed: {response.text}"
+            raise requests.HTTPError(error_msg, response=response) from e
+
+        return response.json()["result"]["data"]
+
+    def get_workflow_run(self, workflow_run_id: str) -> Dict[str, Any]:
+        """
+        Get a workflow run by ID.
+
+        Args:
+            workflow_run_id: UUID of the workflow run
+
+        Returns:
+            The workflow run details
+
+        Raises:
+            requests.HTTPError: If the API request fails
+        """
+        if not self.access_token:
+            self.authenticate()
+
+        url = f"{self.base_url}/trpc/getWorkflowRun"
+
+        payload = {"id": workflow_run_id}
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.access_token}",
+            "x-access-key-id": self.access_key_id,
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+
+        return response.json()["result"]["data"]
+
+    def list_workflow_runs(
+        self,
+        record_id: Optional[str] = None,
+        status: Optional[str] = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> List[Dict[str, Any]]:
+        """
+        List workflow runs with optional filtering.
+
+        Args:
+            record_id: Optional filter by record ID
+            status: Optional filter by status (PENDING, RUNNING, INTERRUPTED, COMPLETED, FAILED)
+            limit: Maximum number of results (default: 50)
+            offset: Number of results to skip (default: 0)
+
+        Returns:
+            List of workflow runs
+
+        Raises:
+            requests.HTTPError: If the API request fails
+        """
+        if not self.access_token:
+            self.authenticate()
+
+        url = f"{self.base_url}/trpc/listWorkflowRuns"
+
+        payload: Dict[str, Any] = {
+            "limit": limit,
+            "offset": offset,
+        }
+        if record_id:
+            payload["recordId"] = record_id
+        if status:
+            payload["status"] = status
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.access_token}",
+            "x-access-key-id": self.access_key_id,
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()
+
+        return response.json()["result"]["data"]
+
 
 # Example usage
 if __name__ == "__main__":
@@ -226,3 +358,23 @@ if __name__ == "__main__":
         },
     )
     print(f"Created record with workflows: {record_with_workflow['id']}")
+
+    # Example 4: Schedule a LangGraph workflow run
+    workflow_run = client.schedule_workflow_run(
+        record_id=record["id"],
+        config_name="emailRouter",
+        initial_data={
+            "phoneNumber": "+15551234567",
+            "contactEmail": "customer@example.com",
+            "jobDescription": "Follow up on invoice status",
+        },
+    )
+    print(f"Scheduled workflow run: {workflow_run['id']} (thread: {workflow_run['threadId']})")
+
+    # Example 5: Check workflow run status
+    run_status = client.get_workflow_run(workflow_run["id"])
+    print(f"Workflow status: {run_status['status']}")
+
+    # Example 6: List workflow runs for a record
+    runs = client.list_workflow_runs(record_id=record["id"])
+    print(f"Found {len(runs)} workflow run(s) for record")

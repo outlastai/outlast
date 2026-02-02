@@ -52,3 +52,13 @@ export type RecordWorkflow = Prisma.RecordWorkflowModel
  * 
  */
 export type Item = Prisma.ItemModel
+/**
+ * Model WorkflowRun
+ * 
+ */
+export type WorkflowRun = Prisma.WorkflowRunModel
+/**
+ * Model CallRefMapping
+ * 
+ */
+export type CallRefMapping = Prisma.CallRefMappingModel
