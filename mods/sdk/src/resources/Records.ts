@@ -8,8 +8,10 @@ import type {
   DeleteRecordRequest,
   ListRecordsRequest,
   GetRecordHistoryRequest,
-  RecordEntity,
-  RecordHistory
+  GetRecordHistoryResponse,
+  ListPendingReviewsRequest,
+  SubmitHumanReviewRequest,
+  RecordEntity
 } from "../types.js";
 
 /**
@@ -161,7 +163,7 @@ class Records {
    * @param {string} request.recordId - The ID of the Record to get history for
    * @param {number} [request.skip] - Number of history entries to skip
    * @param {number} [request.take] - Maximum number of history entries to return
-   * @return {Promise<RecordHistory[]>} - The response array containing the RecordHistory entries
+   * @return {Promise<GetRecordHistoryResponse>} - Conversation history (messages, attempts, lastChannel)
    * @example
    * const records = new SDK.Records(client);
    *
@@ -170,10 +172,28 @@ class Records {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async getRecordHistory(request: GetRecordHistoryRequest): Promise<RecordHistory[]> {
-    return this.client.request((trpc) => trpc.getRecordHistory.query(request)) as Promise<
-      RecordHistory[]
+  async getRecordHistory(request: GetRecordHistoryRequest): Promise<GetRecordHistoryResponse> {
+    return this.client.request((trpc) =>
+      trpc.getRecordHistory.query(request)
+    ) as Promise<GetRecordHistoryResponse>;
+  }
+
+  /**
+   * List records pending human review (workflowStatus = WAITING_HUMAN).
+   */
+  async listPendingReviews(request: ListPendingReviewsRequest = {}): Promise<RecordEntity[]> {
+    return this.client.request((trpc) => trpc.listPendingReviews.query(request)) as Promise<
+      RecordEntity[]
     >;
+  }
+
+  /**
+   * Submit human review decision for a record.
+   */
+  async submitHumanReview(request: SubmitHumanReviewRequest): Promise<{ ok: boolean }> {
+    return this.client.request((trpc) => trpc.submitHumanReview.mutate(request)) as Promise<{
+      ok: boolean;
+    }>;
   }
 }
 

@@ -84,7 +84,9 @@ class Workflows {
    *   .catch(console.error); // an error occurred
    */
   async createWorkflow(request: CreateWorkflowRequest): Promise<Workflow> {
-    return this.client.request((trpc) => trpc.createWorkflow.mutate(request)) as Promise<Workflow>;
+    return this.client.request((trpc) =>
+      trpc.createWorkflow.mutate(request as Parameters<typeof trpc.createWorkflow.mutate>[0])
+    ) as Promise<Workflow>;
   }
 
   /**
@@ -107,7 +109,9 @@ class Workflows {
    *   .catch(console.error);
    */
   async updateWorkflow(request: UpdateWorkflowRequest): Promise<Workflow> {
-    return this.client.request((trpc) => trpc.updateWorkflow.mutate(request)) as Promise<Workflow>;
+    return this.client.request((trpc) =>
+      trpc.updateWorkflow.mutate(request as Parameters<typeof trpc.updateWorkflow.mutate>[0])
+    ) as Promise<Workflow>;
   }
 
   /**

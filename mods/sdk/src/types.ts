@@ -194,20 +194,38 @@ export type GetRecordHistoryRequest = {
   take?: number;
 };
 
-// =============================================================================
-// Record History Types
-// =============================================================================
+/** Conversation message (LangGraph / getRecordHistory response). */
+export type RecordConversationMessage = {
+  role: "system" | "user" | "assistant" | "tool";
+  content: string;
+  channel?: string;
+  channelMessageId?: string;
+  metadata?: { [key: string]: unknown };
+};
 
-export type RecordHistory = {
-  id: string;
+/** getRecordHistory response (from LangGraph checkpoints). */
+export type GetRecordHistoryResponse = {
+  messages: RecordConversationMessage[];
+  attempts: number;
+  lastChannel: string | null;
+  workflowStatus?: string | null;
+  updatedAt?: string | null;
+};
+
+/** Request for listPendingReviews (workspaceId optional when from context). */
+export type ListPendingReviewsRequest = {
+  workspaceId?: string;
+};
+
+/** Request for submitHumanReview. */
+export type SubmitHumanReviewRequest = {
   recordId: string;
-  status: RecordStatus;
-  aiNote: string | null;
-  humanNote: string | null;
-  agent: string;
-  channel: Channel;
-  channelMetadata: JsonObject | null;
-  createdAt: string | Date;
+  workflowId?: string;
+  decision: {
+    approved: boolean;
+    notes: string;
+    nextAction: "continue" | "escalate" | "close";
+  };
 };
 
 // =============================================================================
@@ -245,6 +263,11 @@ export type ListContactsRequest = {
 // Workflow Types
 // =============================================================================
 
+export type GraphDefinition = {
+  entrypoint: string;
+  nodes: { [key: string]: unknown };
+};
+
 export type Workflow = {
   id: string;
   workspaceId: string;
@@ -257,6 +280,7 @@ export type Workflow = {
   schedule: string | null;
   emailTemplate: string | null;
   callPrompt: string | null;
+  graphDefinition: GraphDefinition | null;
   createdAt: string | Date;
   updatedAt: string | Date;
 };
@@ -271,6 +295,7 @@ export type CreateWorkflowRequest = {
   schedule?: string | null;
   emailTemplate?: string | null;
   callPrompt?: string | null;
+  graphDefinition?: GraphDefinition | null;
 };
 
 export type UpdateWorkflowRequest = {
@@ -284,6 +309,7 @@ export type UpdateWorkflowRequest = {
   schedule?: string | null;
   emailTemplate?: string | null;
   callPrompt?: string | null;
+  graphDefinition?: GraphDefinition | null;
 };
 
 export type DeleteWorkflowRequest = {
